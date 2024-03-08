@@ -1,0 +1,125 @@
+  arrowhead_t xa_nh
+  arrowhead_t xa_mh
+
+  s_nr_0_x
+  s_nr_0_y
+  s_nr_1_x
+  s_nr_1_y
+  s_nr_2_x
+  s_nr_3_y
+
+  s_mr_0_x
+  s_mr_0_y
+  s_mr_1_x
+  s_mr_1_y
+  s_mr_2_x
+  s_mr_3_y
+
+// Calculate the string representation of the tip of the component vector that represents VMG.
+
+  s_vr_x
+  s_vr_y
+
+// Calculate the string representations of the component vectors that represent the post and tip of the rudder.
+
+  xd_rp
+
+  s_rp_x
+  s_rp_y
+
+  xd_rt
+
+  s_rt_x
+  s_rt_y
+
+// Calculate the string representation of the tip of the component vector that represents apparent wind.
+
+  s_ar_x
+  s_ar_y
+
+// Calculate the string representation of the tip of the component vector that represents true wind.
+
+  s_tr_x
+  s_tr_y
+
+// Calculate the string representation of the tip of the component vector that represents course and speed.
+
+  s_cr_x
+  s_cr_y
+
+// Calculate the string representation of the x coordinate of the ball that represents VMG, leeway and true wind relative to true north,
+// relative to centre of the panel.
+
+  s_vmg
+  s_crh
+  s_trn
+
+// Calculate the string representation of the apparent wind angle.
+
+  s_arh
+
+// Calculate the string representation of the points of the hull shape.
+
+
+  as_hx[ s8_index ]
+  as_hy[ s8_index ]
+
+  s_0
+  s_1
+  s_2
+  s_3
+  s_4
+  s_5
+  s_6
+  s_7
+  s_8
+  s_9
+  s_10
+  s_11
+  s_12
+  s_13
+  s_14
+  s_15
+  s_16
+  s_17
+  s_18
+  s_19
+  s_20
+  s_21
+  s_22
+  s_23
+  s_24
+  s_25
+
+  s8_heart_beat
+
+  s_cr_shadow_begin_x
+  s_cr_shadow_begin_y
+  s_cr_shadow_end_x
+  s_cr_shadow_end_y
+
+  s_tr_shadow_begin_x
+  s_tr_shadow_begin_y
+  s_tr_shadow_end_x
+  s_tr_shadow_end_y
+
+  s_vr_shadow_begin_x
+  s_vr_shadow_begin_y
+  s_vr_shadow_end_x
+  s_vr_shadow_end_y
+
+  s_crh_ball_centre_x
+
+  s_vmg_ball_centre_x
+
+  s_trn_ball_centre_x
+
+  s_crh
+
+  s_vmg_clr
+  s_vmg_s_clr
+
+  pac_utc
+
+  s_hbt_clr
+

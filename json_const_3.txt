@@ -1,0 +1,24 @@
+{
+  "key" : "constants",
+  "display" : 
+  { "bkgnd" : "_P3_BACKGROUND_",
+    "txt_clr" : "_P3_TEXT_COLOUR_",
+    "aw_clr" : "_P3_AW_COLOUR_",
+    "var_clr" : "_P3_TRUE_NORTH_COLOUR_",
+    "z_clr" : "_P3_ZERO_COLOUR_",
+    "rw1" : "_P3_ROW_WIDTH_1_",
+    "rw2" : "_P3_ROW_WIDTH_2_",
+    "rw3" : "_P3_ROW_WIDTH_3_",
+    "rh" : "_P3_ROW_HEIGHT_",
+    "iw" : "_P3_INDICATOR_WIDTH_"
+  },
+  "txt" : 
+  { "pan_01_01" : "OFFSET: ",
+    "pan_01_02" : " DEG",
+    "pan_03_01" : "VARIATION: ",
+    "pan_03_02" : " DEG",
+    "pan_05_01" : "Fc: ",
+    "pan_05_02" : " Hz"
+  } 
+}
+

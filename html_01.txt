@@ -1,0 +1,331 @@
+<!DOCTYPE html> 
+<html>
+ <head><meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>WINSCREEN</title>
+  <style>
+   html{font-family:Helvetica;display:inline-block;margin:0px auto;text-align:center;}
+   body{margin-top:20px;}
+   canvas{ border:2px solid white;}
+   .button_class{
+    width: 300px;
+    background-color: #DDDDDD;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+   }
+   .hidden_class{
+    display: none;
+   }
+  </style>
+ </head>
+ <body>
+  <div>
+   <canvas id='pane_1' height='0'></canvas>
+  </div>
+  <div>
+   <canvas id='pane_2' height='0'></canvas>
+  </div>
+  <div>
+   <canvas id='pane_3' height='0'></canvas>
+  </div>
+  <div>
+   <canvas id='pane_4' height='0'></canvas>
+  </div>
+  <div>
+   <button type='button' class = 'button_class hidden_class' id='next_id'>
+    NEXT
+   </button>
+  </div>
+  <script>
+
+   var socket;
+   var rx;
+
+   var bkgnd;
+   var pw;
+   var vph;
+   var bph;
+   var h_clr;
+
+   var rdr_clr;
+   var rdr_wt;
+
+   var b_clr;
+   var b_s_clr;
+   var b_wt;
+   var b_s_wt;
+
+   var tw_clr;
+   var tw_s_clr;
+   var tw_wt;
+   var tw_s_wt;
+
+   var aw_clr;
+   var aw_wt;
+
+   var vmg_wt;
+   var vmg_s_wt;
+
+   var n_clr;
+   var m_clr;
+   var m_wt;
+   var crh_b_clr;
+   var trn_b_clr;
+
+   var hb_x;
+   var hb_y;
+   var hb_s;
+   var hb_clr;
+
+   const canvas_1=document.getElementById('pane_1');
+   const ctx_1=canvas_1.getContext('2d');
+   const canvas_2=document.getElementById('pane_2');
+   const ctx_2=canvas_2.getContext('2d');
+   const canvas_3=document.getElementById('pane_3');
+   const ctx_3=canvas_3.getContext('2d');
+   const canvas_4=document.getElementById('pane_4');
+   const ctx_4=canvas_4.getContext('2d');
+
+   function init(){
+    socket=new WebSocket('ws:/'+'/'+window.location.hostname+':81/');
+    socket.onmessage=function(socket_event){
+     processCommand(socket_event);
+    };
+   }
+
+   document.getElementById('next_id').addEventListener('click', function(){
+    socket.send('req:next')
+   });
+
+   function processCommand(socket_event){
+
+    rx=JSON.parse(socket_event.data);
+
+    if (rx.key==='req'){
+     if (rx.value==='this'){
+      socket.send('this:'+window.location.href);
+     }
+    }
+
+    if (rx.key==='next'){
+     socket.close;
+     window.location.href=rx.value;
+    }
+
+    if (rx.key==='constants'){
+
+     bkgnd=rx.display.bkgnd;
+     pw=parseInt(rx.display.pw);
+     vph=parseInt(rx.display.vph);
+     bph=parseInt(rx.display.bph);
+
+     h_clr=rx.display.hcr;
+
+     rdr_clr=rx.rdr.clr;
+     rdr_wt=parseInt(rx.rdr.wt);
+
+     b_clr=rx.bt.clr;
+     b_s_clr=rx.bt.s_clr;
+     b_wt=parseInt(rx.bt.wt);
+     b_s_wt=parseInt(rx.bt.s_wt);
+
+     tw_clr=rx.tw.clr;
+     tw_s_clr=rx.tw.s_clr;
+     tw_wt=parseInt(rx.tw.wt);
+     tw_s_wt=parseInt(rx.tw.s_wt);
+
+     aw_clr=rx.aw.clr;
+     aw_wt=parseInt(rx.aw.wt);
+
+     vmg_wt=parseInt(rx.vmg.wt);
+     vmg_s_wt=parseInt(rx.vmg.s_wt);
+
+     n_clr=rx.n.clr;
+     m_clr=rx.m.clr;
+     m_wt=rx.m.wt;
+     crh_b_clr=rx.crh_b.clr;
+     trn_b_clr=rx.trn_b.clr;
+
+     hb_x=rx.hbt.x;
+     hb_y=rx.hbt.y;
+     hb_s=rx.hbt.s;
+
+     canvas_1.width=pw;
+     canvas_1.height=vph;
+
+     canvas_2.width=pw;
+     canvas_2.height=bph;
+
+     canvas_3.width=pw;
+     canvas_3.height=bph;
+
+     canvas_4.width=pw;
+     canvas_4.height=bph;
+
+     document.getElementById('next_id').classList.remove('hidden_class');
+
+    }
+
+    if (rx.key==='variables'){
+
+     ctx_1.fillStyle=bkgnd;
+     ctx_2.fillStyle=bkgnd;
+     ctx_3.fillStyle=bkgnd;
+     ctx_4.fillStyle=bkgnd;
+
+     ctx_1.fillRect(0,0,pw,vph);
+     ctx_2.fillRect(0,0,pw,bph);
+     ctx_3.fillRect(0,0,pw,bph);
+     ctx_4.fillRect(0,0,pw,bph);
+
+     ctx_1.fillStyle=h_clr;
+     ctx_1.lineCap='round';
+     ctx_1.lineJoin='round';
+
+     const c_x=pw/2;
+     const c_y=vph/2;
+
+     const b_y=bph/2;
+     const b_r=bph/2;
+
+     ctx_1.beginPath();
+
+     ctx_1.moveTo(c_x+parseInt(rx.hl[0]),c_y+parseInt(rx.hl[1]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[2]),c_y+parseInt(rx.hl[3]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[4]),c_y+parseInt(rx.hl[5]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[6]),c_y+parseInt(rx.hl[7]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[8]),c_y+parseInt(rx.hl[9]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[10]),c_y+parseInt(rx.hl[11]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[12]),c_y+parseInt(rx.hl[13]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[14]),c_y+parseInt(rx.hl[15]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[16]),c_y+parseInt(rx.hl[17]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[18]),c_y+parseInt(rx.hl[19]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[20]),c_y+parseInt(rx.hl[21]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[22]),c_y+parseInt(rx.hl[23]));
+     ctx_1.lineTo(c_x+parseInt(rx.hl[24]),c_y+parseInt(rx.hl[25]));
+
+     ctx_1.closePath();
+     ctx_1.fill();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=rdr_wt;
+     ctx_1.strokeStyle=rdr_clr;
+     ctx_1.moveTo(c_x+parseInt(rx.rdr.post.x),c_y+parseInt(rx.rdr.post.y));
+     ctx_1.lineTo(c_x+parseInt(rx.rdr.tip.x),c_y+parseInt(rx.rdr.tip.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=b_s_wt;
+     ctx_1.strokeStyle=b_s_clr;
+     ctx_1.moveTo(c_x+parseInt(rx.bt_s.begin.x), c_y+parseInt(rx.bt_s.begin.y));
+     ctx_1.lineTo(c_x+parseInt(rx.bt_s.end.x), c_y+parseInt(rx.bt_s.end.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=tw_s_wt;
+     ctx_1.strokeStyle=tw_s_clr;
+     ctx_1.moveTo(c_x+parseInt(rx.tw_s.begin.x), c_y+parseInt(rx.tw_s.begin.y));
+     ctx_1.lineTo(c_x+parseInt(rx.tw_s.end.x), c_y+parseInt(rx.tw_s.end.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=aw_wt;
+     ctx_1.strokeStyle=aw_clr;
+     ctx_1.moveTo(c_x,c_y);
+     ctx_1.lineTo(c_x+parseInt(rx.aw.x),c_y+parseInt(rx.aw.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=tw_wt;
+     ctx_1.strokeStyle=tw_clr;
+     ctx_1.moveTo(c_x,c_y);
+     ctx_1.lineTo(c_x+parseInt(rx.tw.x),c_y+parseInt(rx.tw.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=b_wt;
+     ctx_1.strokeStyle=b_clr;
+     ctx_1.moveTo(c_x,c_y);
+     ctx_1.lineTo(c_x+parseInt(rx.bt.x),c_y+parseInt(rx.bt.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=vmg_wt;
+     ctx_1.strokeStyle=rx.vmg.clr;
+     ctx_1.moveTo(c_x,c_y);
+     ctx_1.lineTo(c_x+parseInt(rx.vmg.x),c_y+parseInt(rx.vmg.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=vmg_s_wt;
+     ctx_1.strokeStyle=rx.vmg_s.clr;
+     ctx_1.moveTo(c_x+parseInt(rx.vmg_s.begin.x), c_y+parseInt(rx.vmg_s.begin.y));
+     ctx_1.lineTo(c_x+parseInt(rx.vmg_s.end.x), c_y+parseInt(rx.vmg_s.end.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.fillStyle=n_clr;
+     ctx_1.moveTo(c_x+parseInt(rx.tru_nth.point[0].x),c_y+parseInt(rx.tru_nth.point[0].y));
+     ctx_1.lineTo(c_x+parseInt(rx.tru_nth.point[1].x),c_y+parseInt(rx.tru_nth.point[1].y));
+     ctx_1.lineTo(c_x+parseInt(rx.tru_nth.point[2].x),c_y+parseInt(rx.tru_nth.point[2].y));
+     ctx_1.closePath;
+     ctx_1.fill();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=m_wt;
+     ctx_1.strokeStyle=m_clr;
+     ctx_1.moveTo(c_x+parseInt(rx.mag_nth.point[0].x),c_y+parseInt(rx.mag_nth.point[0].y));
+     ctx_1.lineTo(c_x+parseInt(rx.mag_nth.point[1].x),c_y+parseInt(rx.mag_nth.point[1].y));
+     ctx_1.lineTo(c_x+parseInt(rx.mag_nth.point[2].x),c_y+parseInt(rx.mag_nth.point[2].y));
+     ctx_1.lineTo(c_x+parseInt(rx.mag_nth.point[0].x),c_y+parseInt(rx.mag_nth.point[0].y));
+     ctx_1.stroke();
+
+     ctx_1.font='30px Arial';
+     ctx_1.textAlign='right';
+     ctx_1.fillStyle=n_clr;
+     ctx_1.fillText(rx.utc,300,22);
+
+     ctx_1.beginPath();
+     ctx_1.fillStyle=rx.hbt_clr;
+     ctx_1.fillRect(hb_x,hb_y,hb_s,hb_s);
+     ctx_1.fill();
+
+     ctx_2.font='30px Arial';
+     ctx_2.textAlign='left';
+     ctx_2.fillStyle='gray';
+     ctx_2.fillText('-5.......VMG(kn).......+5',1,30);
+
+     ctx_3.font='30px Arial';
+     ctx_3.textAlign='left';
+     ctx_3.fillStyle='gray';
+     ctx_3.fillText('-20....LWY(deg)....+20',5,30);
+
+     ctx_4.font='30px Arial';
+     ctx_4.textAlign='left';
+     ctx_4.fillStyle='gray';
+     ctx_4.fillText('-180..TRN(deg)..+180',5,30);
+
+     ctx_2.beginPath();
+     ctx_2.arc(c_x+parseInt(rx.vmg_ball.x),b_y,b_r,0,2*Math.PI,false);
+     ctx_2.fillStyle=rx.vmg_ball.clr;
+     ctx_2.fill();
+
+     ctx_3.beginPath();
+     ctx_3.arc(c_x+parseInt(rx.crh_ball),b_y,b_r,0,2*Math.PI,false);
+     ctx_3.fillStyle=crh_b_clr;
+     ctx_3.fill();
+
+     ctx_4.beginPath();
+     ctx_4.arc(c_x+parseInt(rx.trn_ball),b_y,b_r,0,2*Math.PI,false);
+     ctx_4.fillStyle=trn_b_clr;
+     ctx_4.fill();
+    }
+   }
+
+   init();
+
+  </script>   
+ </body>
+</html>
+

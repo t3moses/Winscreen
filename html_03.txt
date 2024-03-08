@@ -1,0 +1,324 @@
+<!DOCTYPE html> 
+<html>
+ <head><meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>WINSCREEN</title>
+  <style>
+   html{font-family:Helvetica;display:inline-block;margin:0px auto;text-align:center;}
+   body{margin-top:20px;}
+   div{margin-top :2px;
+    margin-bottom :2px;}
+   canvas{ 
+    vertical-align: top;
+    border:2px solid white;}
+   .button_class{
+    height: 62px;
+    background-color: #DDDDDD;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+   }
+   .next_class{
+    width: 300px;
+    background-color: #DDDDDD;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+   }
+   .hidden_class{
+    display: none;
+   }
+   .narrow_class{
+    width: 71px;
+   }
+   .wide_class{
+    width: 306px;
+   }
+  </style>
+ </head>
+ <body>
+
+  <div><canvas id='pane_1' height='0'></canvas></div>
+
+  <span>
+   <button type='button' class = 'button_class hidden_class'; id='button_01'><</button>
+   <canvas id='pane_2' height='0'></canvas>
+   <button type='button' class = 'button_class hidden_class' id='button_02'>></button>
+  </span>
+
+  <div><canvas id='pane_3' height='0'></canvas></div>
+
+  <span>
+   <button type='button' class = 'button_class hidden_class' id='button_03'><</button>
+   <canvas id='pane_4' height='0'></canvas>
+   <button type='button' class = 'button_class hidden_class' id='button_04'>></button>
+  </span>
+
+  <div><canvas id='pane_5' height='0'></canvas></div>
+
+  <span>
+   <button type='button' class = 'button_class hidden_class' id='button_05'><</button>
+   <canvas id='pane_6' height='0'></canvas>
+   <button type='button' class = 'button_class hidden_class' id='button_06'>></button>
+  </span>
+
+  <div><button type='button' class = 'next_class hidden_class' id='next_id'>NEXT</button></div>
+
+  <script>
+
+   var socket;
+   var rx;
+
+   var pan_01;
+   var pan_02;
+   var pan_03;
+   var pan_04;
+   var pan_05;
+   var pan_06;
+
+   var ctx_1;
+   var ctx_2;
+   var ctx_3;
+   var ctx_4;
+   var ctx_5;
+   var ctx_6;
+
+   var but_01;
+   var but_02;
+   var but_03;
+   var but_04;
+   var but_05;
+   var but_06;
+   var but_07;
+
+   var txt_pan_01_01;
+   var txt_pan_01_02;
+   var txt_pan_03_01;
+   var txt_pan_03_02;
+   var txt_pan_05_01;
+   var txt_pan_05_02;
+
+   var aw_clr;
+   var var_clr;
+   var z_clr;
+
+   var rw1;
+   var rw2;
+   var rw3;
+   var rh;
+   var iw;
+
+   var arh_x;
+   var crh_x;
+
+   var off;
+   var van;
+   var fc;
+
+   function init(){
+
+    socket=new WebSocket('ws:/'+'/'+window.location.hostname+':81/');
+    socket.onmessage=function(socket_event){
+     processCommand(socket_event);
+    };
+   }
+
+   function processCommand(socket_event){
+
+    rx=JSON.parse(socket_event.data);
+
+    if (rx.key==='req'){
+     if (rx.value==='this'){
+      socket.send('this:'+window.location.href);
+     }
+    }
+
+    if (rx.key==='next'){
+     socket.close;
+     window.location.href=rx.value;
+    }
+
+    if (rx.key==='constants'){
+
+     txt_pan_01_01 = rx.txt.pan_01_01;
+     txt_pan_01_02 = rx.txt.pan_01_02;
+     txt_pan_03_01 = rx.txt.pan_03_01;
+     txt_pan_03_02 = rx.txt.pan_03_02;
+     txt_pan_05_01 = rx.txt.pan_05_01;
+     txt_pan_05_02 = rx.txt.pan_05_02;
+  
+     bkgnd = rx.display.bkgnd;
+     txt_clr = rx.display.txt_clr;
+
+     aw_clr = rx.display.aw_clr;
+     var_clr = rx.display.var_clr;
+     z_clr = rx.display.z_clr;
+
+     rw1 = parseInt(rx.display.rw1);
+     rw2 = parseInt(rx.display.rw2);
+     rw3 = parseInt(rx.display.rw3);
+     rh = parseInt(rx.display.rh);
+     iw = parseInt(rx.display.iw);
+
+     pan_01 = document.getElementById('pane_1');
+     ctx_1=pan_01.getContext('2d');
+     pan_01.width = rx.display.rw3;
+     pan_01.height = rx.display.rh;
+     pan_02 = document.getElementById('pane_2');
+     ctx_2=pan_02.getContext('2d');
+     pan_02.width = rx.display.rw2;
+     pan_02.height = rx.display.rh;
+     pan_03 = document.getElementById('pane_3');
+     ctx_3=pan_03.getContext('2d'); 
+     pan_03.width = rw3;
+     pan_03.height = rh;
+     pan_04 = document.getElementById('pane_4');
+     ctx_4=pan_04.getContext('2d');
+     pan_04.width = rx.display.rw2;
+     pan_04.height = rx.display.rh;
+     pan_05 = document.getElementById('pane_5');
+     ctx_5=pan_05.getContext('2d');
+     pan_05.width = rx.display.rw3;
+     pan_05.height = rx.display.rh;
+     pan_06 = document.getElementById('pane_6');
+     ctx_6=pan_06.getContext('2d');
+     pan_06.width = rx.display.rw2;
+     pan_06.height = rx.display.rh;
+
+     but_01 = document.getElementById('button_01');
+     but_01.classList.add('narrow_class');
+     but_01.classList.remove('hidden_class');
+     but_01.addEventListener('click', function(){ socket.send( 'offset:dec' )});
+
+     but_02 = document.getElementById('button_02');
+     but_02.classList.add('narrow_class');
+     but_02.classList.remove('hidden_class');     
+     but_02.addEventListener('click', function(){ socket.send( 'offset:inc' )});
+
+     but_03 = document.getElementById('button_03');
+     but_03.classList.add('narrow_class');
+     but_03.classList.remove('hidden_class');      
+     but_03.addEventListener('click', function(){ socket.send( 'variation:dec' )});
+
+     but_04 = document.getElementById('button_04');
+     but_04.classList.add('narrow_class');
+     but_04.classList.remove('hidden_class');     
+     but_04.addEventListener('click', function(){ socket.send( 'variation:inc' )});
+
+     but_05 = document.getElementById('button_05');
+     but_05.classList.add('narrow_class');
+     but_05.classList.remove('hidden_class');     
+     but_05.addEventListener('click', function(){ socket.send( 'fc:dec' )});
+
+     but_06 = document.getElementById('button_06');
+     but_06.classList.add('narrow_class');
+     but_06.classList.remove('hidden_class');
+     but_06.addEventListener('click', function(){ socket.send( 'fc:inc' )});
+
+     but_07 = document.getElementById('next_id');
+     but_07.classList.remove('hidden_class');
+
+     but_07.addEventListener('click', function(){
+     socket.send('corrections:commit'); 
+     socket.send('req:next')
+     });
+
+     ctx_1.fillStyle = bkgnd;
+     ctx_1.fillRect(0, 0, rw3, rh);
+     ctx_1.font='24px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=txt_clr;
+
+     ctx_3.fillStyle = bkgnd;
+     ctx_3.fillRect(0, 0, rw3, rh);
+     ctx_3.font='24px Arial';
+     ctx_3.textAlign='center';
+     ctx_3.fillStyle=txt_clr;
+
+     ctx_5.fillStyle = bkgnd;
+     ctx_5.fillRect(0, 0, rw3, rh);
+     ctx_5.font='24px Arial';
+     ctx_5.textAlign='center';
+     ctx_5.fillStyle=txt_clr;
+
+     ctx_6.fillStyle = bkgnd;
+     ctx_6.fillRect(0, 0, rw3, rh);
+
+     ctx_2.fillStyle = bkgnd;
+     ctx_2.fillRect(0, 0, rw2, rh);
+
+     ctx_4.fillStyle = bkgnd;
+     ctx_4.fillRect(0, 0, rw2, rh);
+
+    }
+  
+    if (rx.key==='variables'){
+
+     arh_x = parseInt(rx.corrections.arh);
+     crh_x = parseInt(rx.corrections.crh);
+
+     off = rx.offset;
+     van = rx.variation;
+     fc = rx.fc;
+
+     ctx_1.fillStyle = bkgnd;
+     ctx_1.fillRect(0, 0, rw3, rh);
+     ctx_1.font='24px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=txt_clr;
+     ctx_1.fillText( txt_pan_01_01 + off + txt_pan_01_02, rw3/2, 40);
+
+     ctx_3.fillStyle = bkgnd;
+     ctx_3.fillRect(0, 0, rw3, rh);
+     ctx_3.font='24px Arial';
+     ctx_3.textAlign='center';
+     ctx_3.fillStyle=txt_clr;
+     ctx_3.fillText( txt_pan_03_01 + van + txt_pan_03_02, rw3/2, 40);
+
+     ctx_5.fillStyle = bkgnd;
+     ctx_5.fillRect(0, 0, rw3, rh);
+     ctx_5.font='24px Arial';
+     ctx_5.textAlign='center';
+     ctx_5.fillStyle=txt_clr;
+     ctx_5.fillText( txt_pan_05_01 + fc + txt_pan_05_02, rw3/2, 40);
+
+     ctx_2.fillStyle = bkgnd;
+     ctx_2.fillRect(0, 0, rw2, rh);
+     ctx_2.font='50px Arial';
+     ctx_2.textAlign='center';
+     ctx_2.fillStyle='gray';
+     ctx_2.fillText('AWA',rw2/2, 50);
+     ctx_2.beginPath();
+     ctx_2.fillStyle=z_clr;
+     ctx_2.fillRect((rw2-iw)/2, 0, iw, rh);
+     ctx_2.fill();
+     ctx_2.beginPath();
+     ctx_2.fillStyle=aw_clr;
+     ctx_2.fillRect(rw2/2+arh_x, 0, iw, rh);
+     ctx_2.fill();
+
+     ctx_4.fillStyle = bkgnd;
+     ctx_4.fillRect(0, 0, rw2, rh);
+     ctx_4.font='50px Arial';
+     ctx_4.textAlign='center';
+     ctx_4.fillStyle='gray';
+     ctx_4.fillText('LWY',rw2/2, 50);
+     ctx_4.beginPath();
+     ctx_4.fillStyle=z_clr;
+     ctx_4.fillRect((rw2-iw)/2, 0, iw, rh);
+     ctx_4.fill();
+     ctx_4.beginPath();
+     ctx_4.fillStyle=var_clr;
+     ctx_4.fillRect(rw2/2+crh_x, 0, iw, rh);
+     ctx_4.fill();
+
+    }
+   }
+
+   init();
+
+  </script>   
+ </body>
+</html>
+

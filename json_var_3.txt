@@ -1,0 +1,13 @@
+
+{
+  "key" : "variables",
+  "vmg" : "_s_vmg_"
+}
+
+
+JsonDocument var_03;
+
+var_03["key"] = "variables";
+var_03["vmg"] = s_vmg;
+
+serializeJson(var_03, pac_json_const_03, 128);

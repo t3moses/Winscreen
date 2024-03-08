@@ -1,0 +1,17 @@
+{
+  "key" : "constants",
+  "display" : 
+  { "bkgnd" : "_P2_BACKGROUND_",
+    "txt_clr" : "_P2_TEXT_COLOUR_",
+    "pw" : "_P2_PANEL_WIDTH_",
+    "ph" : "_P2_PANEL_HEIGHT_",
+    "y1" : "_P2_ROW_TOP_1_",
+    "y2" : "_P2_ROW_TOP_2_",
+    "y3" : "_P2_ROW_TOP_3_"
+  },
+  "txt" : 
+  { "t01" : "VMG",
+    "t02" : "KNOTS"
+  } 
+}
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+ <head><meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>WINSCREEN</title>
+  <style>
+   html{font-family:Helvetica;display:inline-block;margin:0px auto;text-align:center;}
+   body{margin-top:20px;}
+  </style>
+ </head>
+ <body>
+  <div>
+   <img src='/splash' alt='CARIAD'>
+  </div>
+  <script>
+
+   var socket;
+   var rx;
+
+   setTimeout(function(){
+    socket.send('req:next')},
+    3000);
+
+   function init(){
+    socket=new WebSocket('ws:/'+'/'+window.location.hostname+':81/');
+    socket.onmessage=function(socket_event){
+     processCommand(socket_event);
+    };
+   }
+
+   function processCommand(socket_event){
+
+    rx=JSON.parse(socket_event.data);
+
+    if (rx.key==='req'){
+     if (rx.value==='this'){
+      socket.send('this:'+window.location.href);
+     }
+    }
+
+    if (rx.key==='next'){
+     socket.close;
+     window.location.href=rx.value;
+    }
+
+   }
+
+   init();
+
+  </script>
+ </body>
+</html>

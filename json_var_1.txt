@@ -1,0 +1,80 @@
+
+{
+  "key" : "variables",
+
+  "hl" : [ "_s_0_", "_s_1_",
+           "_s_2_", "_s_3_",
+           "_s_4_", "_s_5_",
+           "_s_6_", "_s_7_",
+           "_s_8_", "_s_9_",
+           "_s_10_", "_s_11_",
+           "_s_12_", "_s_13_",
+           "_s_14_", "_s_15_",
+           "_s_16_", "_s_17_",
+           "_s_18_", "_s_19_",
+           "_s_20_", "_s_21_",
+           "_s_22_", "_s_23_",
+           "_s_24_", "_s_25_" ],
+
+  "bt" :
+    { "x" : "_s_cr_x_", "y" : "_s_cr_y_"
+    },
+  "rdr" :
+    { "post" :
+      { "x" : "_s_rp_x_", "y" : "_s_rp_y_"
+      },
+    "tip" :
+      { "x" : "_s_rt_x_", "y" : "_s_rt_y_"
+      }
+    },
+  "tw" :
+    { "x" : "_s_tr_x_", "y" : "_s_tr_y_"
+    },
+  "aw" :
+    { "x" : "_s_ar_x_", "y" : "_s_ar_y_"
+    },
+  "vmg" :
+    { "clr" : "_s_vmg_clr_", "x" : "_s_vr_x_", "y" : "_s_vr_y_"
+    },
+  "bt_s" :
+    { "begin" :
+      { "x" : "_s_cr_shadow_begin_x_", "y" : "_s_cr_shadow_begin_y_"
+      },
+    "end" :
+      { "x" : "_s_cr_shadow_end_x_", "y" : "_s_cr_shadow_end_y_"
+      }
+    },
+  "tw_s" :
+    { "begin" :
+      { "x" : "_s_tr_shadow_begin_x_", "y" : "_s_tr_shadow_begin_y_"
+      },
+    "end" : 
+      { "x" : "_s_tr_shadow_end_x_", "y" : "_s_tr_shadow_end_y_"
+      }
+    },
+  "vmg_s" :
+    { "clr" : "_s_vmg_s_clr_",
+    "begin" :
+      { "x" : "_s_vr_shadow_begin_x_", "y" : "_s_vr_shadow_begin_y_"
+      },
+    "end" :
+      { "x" : "_s_vr_shadow_end_x_", "y" : "_s_vr_shadow_end_y_"
+      }
+    },
+  "vmg_ball" :
+  { "clr" : "_s_vmg_b_clr_",
+    "x" : "_s_vmg_"
+  },
+  "crh_ball" : "_s_crh_",
+  "trn_ball" : "_s_trn_",
+  "tru_nth" :
+    { "point" : [ { "x" : "_s_nr_0_x_", "y" : "_s_nr_0_y_" },
+                  { "x" : "_s_nr_1_x_", "y" : "_s_nr_1_y_" },
+                  { "x" : "_s_nr_2_x_", "y" : "_s_nr_2_y_" } ] },
+  "mag_nth" :
+    { "point" : [ { "x" : "_s_mr_0_x_", "y" : "_s_mr_0_y_" },
+                  { "x" : "_s_mr_1_x_", "y" : "_s_mr_1_y_" },
+                  { "x" : "_s_mr_2_x_", "y" : "_s_mr_2_y_" } ] },
+  "hbt_clr" : "_s_hbt_clr_",
+  "utc" : "_ac_utc_"
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html> 
+<html>
+ <head><meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>WINSCREEN</title>
+  <style>
+   html{font-family:Helvetica;display:inline-block;margin:0px auto;text-align:center;}
+   body{margin-top:20px;}
+   canvas{ border:2px solid white;}
+   .button_class{
+    width: 300px;
+    background-color: #DDDDDD;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    font-size: 24px;
+    cursor: pointer;
+   }
+   .hidden_class{
+    display: none;
+   }
+  </style>
+ </head>
+ <body>
+  <div>
+   <canvas id='pane_1' height='0'></canvas>
+  </div>
+  <div>
+   <button type='button' class = 'button_class hidden_class' id='next_id'>
+    NEXT
+   </button>
+  </div>
+  <script>
+
+   var socket;
+   var rx;
+
+   var bkgnd;
+   var pw;
+   var ph;
+
+   var y1;
+   var y2;
+   var y3;
+   var y4;
+   var y5;
+   var y6;
+
+   var t_clr;
+   var txt_01;
+   var txt_02;
+   var txt_03;
+   var txt_04;
+
+   var dev;
+   var crn;
+
+   const canvas_1=document.getElementById('pane_1');
+   const ctx_1=canvas_1.getContext('2d');
+
+   function init(){
+    socket=new WebSocket('ws:/'+'/'+window.location.hostname+':81/');
+    socket.onmessage=function(socket_event){
+     processCommand(socket_event);
+    };
+   }
+
+   document.getElementById('next_id').addEventListener('click', function(){
+    socket.send('req:next')
+   });
+
+   function processCommand(socket_event){
+
+    rx=JSON.parse(socket_event.data);
+
+    if (rx.key==='req'){
+     if (rx.value==='this'){
+      socket.send('this:'+window.location.href);
+     }
+    }
+
+    if (rx.key==='next'){
+     socket.close;
+     window.location.href=rx.value;
+    }
+
+    if (rx.key==='constants'){
+
+     bkgnd=rx.display.bkgnd;
+     pw=parseInt(rx.display.pw);
+     ph=parseInt(rx.display.ph);
+
+     y1=parseInt(rx.display.y1);
+     y2=parseInt(rx.display.y2);
+     y3=parseInt(rx.display.y3);
+     y4=parseInt(rx.display.y4);
+     y5=parseInt(rx.display.y5);
+     y6=parseInt(rx.display.y6);
+
+     t_clr=rx.display.txt_clr;
+     txt_01=rx.txt.t01;
+     txt_02=rx.txt.t02;
+     txt_03=rx.txt.t03;
+     txt_04=rx.txt.t04;
+
+     canvas_1.width=pw;
+     canvas_1.height=ph;
+
+     document.getElementById('next_id').classList.remove('hidden_class');
+
+    }
+
+    if (rx.key==='variables'){
+
+     dev=rx.dev;
+     crn=rx.crn;
+
+     ctx_1.fillStyle=bkgnd;
+     ctx_1.fillRect(0,0,pw,ph);
+
+     ctx_1.font='50px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(txt_01,pw/2,y1);
+
+     ctx_1.font='100px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(dev,pw/2,y2);
+
+     ctx_1.font='50px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(txt_02,pw/2,y3);
+
+     ctx_1.font='100px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(crn,pw/2,y4);
+
+     ctx_1.font='50px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(txt_03,pw/2,y5);
+
+     ctx_1.font='18px Arial';
+     ctx_1.textAlign='center';
+     ctx_1.fillStyle=t_clr;
+     ctx_1.fillText(txt_04,pw/2,y6);
+
+    }
+   }
+
+   init();
+
+  </script>   
+ </body>
+</html>
+

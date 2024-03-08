@@ -1,0 +1,26 @@
+
+{
+  "key" : "variables",
+  "corrections" :
+    { "arh" : "_s_arh_",
+      "crh" : "_s_crh_"
+    },
+  "offset" : "_s_offset_",
+  "variation" : "_s_variation_",
+  "fc" : "_s_fc_"
+ }
+
+
+
+StaticJsondocument<192> doc_var_2;
+
+doc_var_2["contents"] = "VARIABLES";
+
+JsonObject corrections = doc_var_2.createNestedObject("corrections");
+corrections["arh"] = "_s_arh_";
+corrections["crh"] = "_s_crh_";
+doc_var_2["offset"] = "_s_offset_";
+doc_var_2["variation"] = "_s_variation_";
+doc_var_2["fc"] = "_s_fc_";
+
+serializeJson(doc_var_2, output);
