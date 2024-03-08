@@ -76,7 +76,7 @@ struct var_display_data_t {
   radial_vector_t xd_ph; // rudder post relative to boat centre and heading
   double d_vmg; // vmg
   double d_dev; // compass deviation in degrees.
-  double d_crs; // course relative to true north in degrees.
+  double d_crn; // course relative to true north in degrees.
   bool b_upwind; // true value indicates upwind vmg.
   double d_crh; // leeway
   double d_trn; // north-relative true wind

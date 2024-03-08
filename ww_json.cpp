@@ -626,6 +626,32 @@ void ww_json::v_json_var_03( char* pac_json_var_03 ) {
 
 
 
+void ww_json::v_json_var_04( char* pac_json_var_04 ) {
+
+//
+// Load the variable display data for page 04 into a JSON array.
+//
+
+char ac_dev[ 7 ];
+char ac_crn[ 7 ];
+
+  sprintf( ac_dev, "%+3.1f", p_var_display_data->d_dev );
+  sprintf( ac_crn, "%+3.1f", p_var_display_data->d_crn );
+
+  JsonDocument var_04;
+
+  var_04["key"] = "variables";
+  var_04["dev"] = ac_dev;
+  var_04["crn"] = ac_crn;
+
+  serializeJson(var_04, pac_json_var_04, 256);
+
+  delay(100);
+
+}
+
+
+
 arrowhead_t ww_json::x_arrow_head_from_radial( radial_vector_t x_radial_vector ) {
 
 arrowhead_t x_arrowhead;
@@ -641,28 +667,3 @@ arrowhead_t x_arrowhead;
   return x_arrowhead;
 
 }
-
-
-void ww_json::v_json_var_04( char* pac_json_var_04 ) {
-
-//
-// Load the variable display data for page 04 into a JSON array.
-//
-
-char ac_dev[ 4 ];
-char ac_crn[ 5 ];
-
-  sprintf( ac_dev, "%+4.1f", p_var_display_data->d_dev );
-  sprintf( ac_crs, "%+4.1f", p_var_display_data->d_crn );
-
-  JsonDocument var_04;
-
-  var_04["key"] = "variables";
-  var_04["dev"] = ac_dev;
-  var_04["crn"] = ac_crn;
-
-  serializeJson(var_04, pac_json_var_04, 128);
-  delay(100);
-
-}
-
