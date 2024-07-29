@@ -248,7 +248,7 @@ void ww_json::v_json_const_04( char* pac_json_const_04 ) {
 
 
 
-void ww_json::v_json_var_01( e_perspective_t e_perspective, char* pac_json_var_01 ) {
+void ww_json::v_json_var_01( perspective_t e_perspective, char* pac_json_var_01 ) {
 
 //
 // Load the variable display data for page 01 into a JSON array.
@@ -270,7 +270,7 @@ switch( e_perspective ){
   break;
 }
 
-// Calculate string reperspectives of the component vectors of the points of the true and magnetic north arrows in pixels.
+// Calculate string representations of the component vectors of the points of the true and magnetic north arrows in pixels.
 
   arrowhead_t xa_nh = x_arrow_head_from_radial( p_var_display_data->xd_nh );
   arrowhead_t xa_mh = x_arrow_head_from_radial( p_var_display_data->xd_mh );
@@ -289,12 +289,12 @@ switch( e_perspective ){
   s_mr_2_x = (String)(int16_t)( PIXELS_PER_FOOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( xa_mh.x_p2, d_hrr )).x );
   s_mr_2_y = (String)(int16_t)( -PIXELS_PER_FOOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( xa_mh.x_p2, d_hrr )).y );
 
-// Calculate the string reperspective of the tip of the component vector that represents VMG.
+// Calculate the string representation of the tip of the component vector that represents VMG.
 
   s_vr_x = (String)(int16_t)( PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_vh, d_hrr )).x );
   s_vr_y = (String)(int16_t)( -PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_vh, d_hrr )).y );
 
-// Calculate the string reperspectives of the component vectors that represent the post and tip of the rudder.
+// Calculate the string representations of the component vectors that represent the post and tip of the rudder.
 
   xd_rp = ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_ph, d_hrr ));
 
@@ -306,22 +306,22 @@ switch( e_perspective ){
   s_rt_x = (String)(int16_t)( PIXELS_PER_FOOT * xd_rt.x );
   s_rt_y = (String)(int16_t)( -PIXELS_PER_FOOT * xd_rt.y );
 
-// Calculate the string reperspective of the tip of the component vector that represents apparent wind.
+// Calculate the string representation of the tip of the component vector that represents apparent wind.
 
   s_ar_x =  (String)(int16_t)( PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_ah, d_hrr )).x );
   s_ar_y =  (String)(int16_t)( -PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_ah, d_hrr )).y );
 
-// Calculate the string reperspective of the tip of the component vector that represents true wind.
+// Calculate the string representation of the tip of the component vector that represents true wind.
 
   s_tr_x =  (String)(int16_t)( PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_th, d_hrr )).x );
   s_tr_y =  (String)(int16_t)( -PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_th, d_hrr )).y );
 
-// Calculate the string reperspective of the tip of the component vector that represents course and speed.
+// Calculate the string representation of the tip of the component vector that represents course and speed.
 
   s_cr_x =  (String)(int16_t)( PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_ch, d_hrr )).x );
   s_cr_y =  (String)(int16_t)( -PIXELS_PER_KNOT * ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_ch, d_hrr )).y );
 
-// calculate the string reperspective of the shadow vectors.
+// calculate the string representation of the shadow vectors.
 
   s_cr_shadow_begin_x = s_tr_x;
   s_cr_shadow_begin_y = s_tr_y;
@@ -336,31 +336,31 @@ switch( e_perspective ){
   s_vr_shadow_end_x = s_vr_x;
   s_vr_shadow_end_y = s_vr_y;
 
-// Calculate the string reperspective of the x coordinate of the ball that represents VMG, leeway and true wind relative to true north,
+// Calculate the string representation of the x coordinate of the ball that represents VMG, leeway and true wind relative to true north,
 // relative to centre of the panel.
 
-  if( p_var_display_data->d_crh > CRH_BAND / 2.0 ) p_var_display_data->d_crh = CRH_BAND / 2.0;
-  else if( p_var_display_data->d_crh < -CRH_BAND / 2.0 ) p_var_display_data->d_crh = -CRH_BAND / 2.0;
+  if( p_var_display_data->d_ch > CH_BAND / 2.0 ) p_var_display_data->d_ch = CH_BAND / 2.0;
+  else if( p_var_display_data->d_ch < -CH_BAND / 2.0 ) p_var_display_data->d_ch = -CH_BAND / 2.0;
 
-  if( p_var_display_data->d_vmg > VMG_BAND / 2.0 ) p_var_display_data->d_vmg = VMG_BAND / 2.0;
-  else if( p_var_display_data->d_vmg < -VMG_BAND / 2.0 ) p_var_display_data->d_vmg = -VMG_BAND / 2.0;
+  if( p_var_display_data->d_vt > VT_BAND / 2.0 ) p_var_display_data->d_vt = VT_BAND / 2.0;
+  else if( p_var_display_data->d_vt < -VT_BAND / 2.0 ) p_var_display_data->d_vt = -VT_BAND / 2.0;
 
-  if( p_var_display_data->d_trn > TRN_BAND / 2.0 ) p_var_display_data->d_trn = TRN_BAND / 2.0;
-  else if( p_var_display_data->d_trn < -TRN_BAND / 2.0 ) p_var_display_data->d_trn = -TRN_BAND / 2.0;
+  if( p_var_display_data->d_tn > TN_BAND / 2.0 ) p_var_display_data->d_tn = TN_BAND / 2.0;
+  else if( p_var_display_data->d_tn < -TN_BAND / 2.0 ) p_var_display_data->d_tn = -TN_BAND / 2.0;
 
-  s_vmg = (String)(int16_t)(( (double)PANEL_WIDTH / VMG_BAND ) * p_var_display_data->d_vmg );
-  s_crh = (String)(int16_t)(( (double)PANEL_WIDTH / CRH_BAND ) * p_var_display_data->d_crh );
-  s_trn = (String)(int16_t)(( (double)PANEL_WIDTH / TRN_BAND ) * p_var_display_data->d_trn );
+  s_vmg = (String)(int16_t)(( (double)PANEL_WIDTH / VT_BAND ) * p_var_display_data->d_vt );
+  s_crh = (String)(int16_t)(( (double)PANEL_WIDTH / CH_BAND ) * p_var_display_data->d_ch );
+  s_trn = (String)(int16_t)(( (double)PANEL_WIDTH / TN_BAND ) * p_var_display_data->d_tn );
 
-// Calculate the string reperspective of the apparent wind angle.
+// Calculate the string representation of the apparent wind angle.
 
   s_arh = (String)(int16_t)( PIXELS_PER_DEGREE * ww_vector::d_angle_from_radial( p_var_display_data->xd_ah ));
 
-// Calculate the string reperspective of the points of the hull shape.
+// Calculate the string representation of the points of the hull shape.
 
   for( int8_t s8_index = 0; s8_index <= HULL_POINTS_BOUND; s8_index++ ) {
-    as_hx[ s8_index ] = (String)(int16_t)( PIXELS_PER_FOOT * ( ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_hh[ s8_index ], d_hrr )).x ));
-    as_hy[ s8_index ] = (String)(int16_t)( -PIXELS_PER_FOOT * ( ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->xd_hh[ s8_index ], d_hrr )).y ));
+    as_hx[ s8_index ] = (String)(int16_t)( PIXELS_PER_FOOT * ( ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->axd_hh[ s8_index ], d_hrr )).x ));
+    as_hy[ s8_index ] = (String)(int16_t)( -PIXELS_PER_FOOT * ( ww_vector::x_component_from_radial( ww_vector::x_rotate( p_var_display_data->axd_hh[ s8_index ], d_hrr )).y ));
   }
 
   s_0 = as_hx[ 0 ];
@@ -390,11 +390,11 @@ switch( e_perspective ){
   s_24 = as_hx[ 12 ];
   s_25 = as_hy[ 12 ];
 
-  s8_heart_beat = p_var_display_data->s8_heart_beat;
+  s8_heart_beat = p_var_display_data->s8_hb;
 
-  // s_crh = (String)p_var_display_data->d_crh;
+  // s_crh = (String)p_var_display_data->d_ch;
 
-  if( p_var_display_data->b_upwind ) {
+  if( p_var_display_data->b_up ) {
     s_vmg_clr = VMG_UPWIND_COLOUR;
     s_vmg_s_clr = VMG_UPWIND_SHADOW_COLOUR;
     s_vmg_b_clr = VMG_BALL_UPWIND_COLOUR;
@@ -557,7 +557,7 @@ void ww_json::v_json_var_02( char* pac_json_var_02 ) {
 
 char ac_vmg[ 4 ];
 
-  sprintf( ac_vmg, "%+4.1f", p_var_display_data->d_vmg );
+  sprintf( ac_vmg, "%+4.1f", p_var_display_data->d_vt );
 
   JsonDocument var_02;
 
@@ -574,12 +574,12 @@ char ac_vmg[ 4 ];
 void ww_json::v_json_var_03( char* pac_json_var_03 ) {
 
 //
-// s_arh is the string reperspective of d_arh, which is the canvas_2 'x' coordinate 
+// s_arh is the string representation of d_arh, which is the canvas_2 'x' coordinate 
 // of the centre of the indicator bar (pixels).
 // 
 // s_offset is the offset string, calculated from correction_data->d_orh.  It doesn't need filtering.
 //
-// s_crh is the string reperspective of d_crh, which is the canvas_4 'x' coordinate
+// s_crh is the string representation of d_ch, which is the canvas_4 'x' coordinate
 // of the centre of the indicator bar (pixels).
 //
 // s_variation is the variation string, calculated from correction_data->d_mrn.
@@ -592,16 +592,16 @@ void ww_json::v_json_var_03( char* pac_json_var_03 ) {
   String s_fc = String( ww_filter::d_fc_from_index( p_correction_data->s16_fc ));
 
   double d_arh = ww_vector::d_angle_from_radial( p_var_display_data->xd_ah );
-  double d_crh = p_var_display_data->d_crh;
+  double d_ch = p_var_display_data->d_ch;
 
-  if( d_arh > ARH_BAND / 2.0 ) d_arh = ARH_BAND / 2.0;
-  else if( d_arh < -ARH_BAND / 2.0 ) d_arh = -ARH_BAND / 2.0;
+  if( d_arh > AH_BAND / 2.0 ) d_arh = AH_BAND / 2.0;
+  else if( d_arh < -AH_BAND / 2.0 ) d_arh = -AH_BAND / 2.0;
 
-  if( d_crh > CRH_BAND / 2.0 ) d_crh = CRH_BAND / 2.0;
-  else if( d_crh < -CRH_BAND / 2.0 ) d_crh = -CRH_BAND / 2.0;
+  if( d_ch > CH_BAND / 2.0 ) d_ch = CH_BAND / 2.0;
+  else if( d_ch < -CH_BAND / 2.0 ) d_ch = -CH_BAND / 2.0;
 
-  String s_arh = (String)(int16_t)(( (double)P2_PANEL_WIDTH / ( 2 * ARH_BAND )) * d_arh );
-  String s_crh = (String)(int16_t)(( (double)P2_PANEL_WIDTH / ( 2 * CRH_BAND )) * d_crh );
+  String s_arh = (String)(int16_t)(( (double)P2_PANEL_WIDTH / ( 2 * AH_BAND )) * d_arh );
+  String s_crh = (String)(int16_t)(( (double)P2_PANEL_WIDTH / ( 2 * CH_BAND )) * d_ch );
 
 //
 // The remaining code was generated by ArduinoJson.
@@ -635,8 +635,8 @@ void ww_json::v_json_var_04( char* pac_json_var_04 ) {
 char ac_dev[ 7 ];
 char ac_crn[ 7 ];
 
-  sprintf( ac_dev, "%+3.1f", p_var_display_data->d_dev );
-  sprintf( ac_crn, "%+3.1f", p_var_display_data->d_crn );
+  sprintf( ac_dev, "%+3.1f", p_var_display_data->d_cd );
+  sprintf( ac_crn, "%+3.1f", p_var_display_data->d_cn );
 
   JsonDocument var_04;
 

@@ -2,6 +2,7 @@
 #include "ww_types.h"
 #include "ww_constants.h"
 #include "ww_gnss.h"
+#include "ww_vector.h"
 #include <driver/i2c.h>
 
 
@@ -32,12 +33,12 @@ void ww_gnss::v_begin( var_display_data_t* p_var_display_data, gnss_data_t* p_gn
 // and the heartbeat status.
 
   s16_current_fix_index = 0;
-  p_var_display_data->s8_heart_beat = 0;
+  p_var_display_data->s8_hb = 0;
 
 }
 
 
-void ww_gnss::v_x_cr_from_gnss( ) {
+void ww_gnss::v_x_gr_from_gnss( ) {
 
 // Input a chunk of GNSS data.
 
@@ -49,7 +50,7 @@ void ww_gnss::v_x_cr_from_gnss( ) {
 
 // Toggle the heartbeat status.
 
-    p_var_display_data->s8_heart_beat ^= 0x01;
+    p_var_display_data->s8_hb ^= 0x01;
 
     double d_fix_hours = ww_gnss::d_utc_hours_from_pac( pac_tim );
     if( d_fix_hours != ax_fix_series[ s16_current_fix_index ].d_utc_hours ) {
@@ -66,7 +67,7 @@ void ww_gnss::v_x_cr_from_gnss( ) {
 
 // Use the fix data to calculate the north and east components of boat speed.
 
-      ww_gnss::v_x_cr_from_afix_series( );
+      ww_gnss::v_x_gr_from_afix_series( );
 
       ww_gnss::v_utc_time_from_pac( pac_tim );
 
@@ -76,7 +77,7 @@ void ww_gnss::v_x_cr_from_gnss( ) {
 
 
 
-void ww_gnss::v_x_cr_from_afix_series( ) {
+void ww_gnss::v_x_gr_from_afix_series( ) {
 
 // Calculate the north and east components of boat speed in knots.
 // Take account of roll-over at midnight UTC and 180 degrees longitude.
@@ -92,8 +93,10 @@ void ww_gnss::v_x_cr_from_afix_series( ) {
   if( d_delta_longitude_minutes > ( 180.0 * 60.0 )) d_delta_longitude_minutes -= ( 360.0 * 60.0 );
   else if( d_delta_longitude_minutes < ( -180.0 * 60.0 )) d_delta_longitude_minutes += ( 360.0 * 60.0 );
 
-  p_gnss_data->x_cr.x = d_delta_longitude_minutes * cos(( RADIANS_FROM_DEGREES / 60.0 ) * ax_fix_series[ s16_current_fix_index ].d_latitude_minutes ) / d_delta_time_hours;
-  p_gnss_data->x_cr.y = d_delta_latitude_minutes / d_delta_time_hours;
+  x_gc.x = d_delta_longitude_minutes * cos(( RADIANS_FROM_DEGREES / 60.0 ) * ax_fix_series[ s16_current_fix_index ].d_latitude_minutes ) / d_delta_time_hours;
+  x_gc.y = d_delta_latitude_minutes / d_delta_time_hours;
+
+  p_gnss_data->x_gr = ww_vector::x_radial_from_component( x_gc );
 
 }
 

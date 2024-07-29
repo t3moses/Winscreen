@@ -33,8 +33,7 @@ void ww_decode::v_begin( uint32_t* pau32_transition, uint16_t* pu16_transition_i
 
 // The duration of a target datagram in microseconds lies between these two limits.
 
-  ww_decode::u32_us_per_min_target_datagram = (uint32_t)(((double)( MIN_FRAMES_PER_TARGET_DATAGRAM * BITS_PER_FRAME ) - 1.5 ) * ww_decode::u32_us_per_bit );
-  ww_decode::u32_us_per_max_target_datagram = (uint32_t)(((double)( MAX_FRAMES_PER_TARGET_DATAGRAM * BITS_PER_FRAME ) - 0.5 ) * ww_decode::u32_us_per_bit );
+  ww_decode::u32_us_per_max_target_datagram = (uint32_t)((double)( MAX_FRAMES_PER_TARGET_DATAGRAM * ( BITS_PER_FRAME ) + BIT_TIME_THRESHOLD ) * ww_decode::u32_us_per_bit );
 
 }
 
@@ -44,14 +43,23 @@ void ww_decode::v_datum_from_transitions( ) {
 
 // Check that u16_transition_index_max is odd,
 // i.e there are an even number of transitions, and so
-// the Seatalk bus was in the idle condition when data captured commenced.
+// the Seatalk bus was in the idle condition when data capture commenced.
+ 
+  if( ww_decode::is_odd( )) {
+    // Continue
+  }
+  else {
+    return;
+  }
 
-  if( !ww_decode::is_odd( )) return;
+// Check that the duration of the datagram is no longer than the longest target datagram.
 
-// Check that the duration of the datagram is no shorter than the shortest target datagram and
-// no longer than the longest target datagram.
-
-  if( !ww_decode::is_target_length( )) return;
+  if( ww_decode::is_target_length( )) {
+    // Continue
+  }
+  else {
+    return;
+  }
 
 // Decode datagram timings to runs by subtracting u32_get_transition_time[ 0 ] and multiplying by BAUD_RATE / 1 000 000.
 
@@ -59,17 +67,22 @@ void ww_decode::v_datum_from_transitions( ) {
 
 // Decode runs to frames by loading runs of 0s and 1s into frames, completing the last frame wth a sequence of 1s.
 
-  v_frames_from_runs( );
+  ww_decode::v_frames_from_runs( );
 
 // Check frame command bits and start and stop bits.
 
-  if( !ww_decode::is_well_formed( )) return;
+  if( ww_decode::is_well_formed( )) {
+    // Continue
+  }
+  else {
+    return;
+  }
 
 // Decode frames to bytes: shift right by 1 and & with 0x00FF.
 
-  v_bytes_from_frames( );
+  ww_decode::v_bytes_from_frames( );
 
-// Identiify the datagram as PWS, HRM, AWS, ARH.
+// Identiify the datagram as PWS, HRM, AWS or ARO.
 
   datagram_type = ww_decode::is_target( );
 
@@ -98,6 +111,9 @@ void ww_decode::v_datum_from_transitions( ) {
      
 bool ww_decode::is_odd( ) {
 
+// A properly formed datagram has an even number of transitions.
+// So, the maximum transition array index should be odd.
+
   if((( *pu16_transition_index_max ) % 2 ) == 1 ) return true;
   else return false;
 
@@ -107,13 +123,15 @@ bool ww_decode::is_odd( ) {
       
 bool ww_decode::is_target_length( ) {
 
+// Target datagrams have a duration less than u32_us_per_max_target_datagram.
+
   u32_elapsed_time = ( *( pau32_transition + *pu16_transition_index_max ) > *pau32_transition ) ?
   
     *( pau32_transition + *pu16_transition_index_max ) - *pau32_transition : // No wrap around.
     
     MAXLONG - *pau32_transition + *( pau32_transition + *pu16_transition_index_max ) + 1; // Wrap around.
 
-  if(( u32_elapsed_time > u32_us_per_min_target_datagram ) && ( u32_elapsed_time < u32_us_per_max_target_datagram )) return true;
+  if( u32_elapsed_time < u32_us_per_max_target_datagram ) return true;
   else return false;
 
 }
@@ -137,7 +155,7 @@ void ww_decode::v_runs_from_transitions( ) {
 
     uint16_t u16_run_length = (uint16_t)d_run_length;
    
-    u16_run[ u16_run_index ] = ( d_jitter < 0.5 ) ? u16_run_length : u16_run_length + 1;
+    u16_run[ u16_run_index ] = ( d_jitter < BIT_TIME_THRESHOLD ) ? u16_run_length : u16_run_length + 1;
 
   }
 
@@ -211,7 +229,12 @@ bool ww_decode::is_well_formed( ) {
 
 // Check that the command bit in the first frame is 1.
 
-  if( !( u16_frame[ 0 ] & 0x0200 )) return false;
+  if( u16_frame[ 0 ] & 0x0200 ) {
+    //Continue
+  }
+  else {
+    return false;
+  }
 
 // Check that the command bits in all other frames are 0.
 
@@ -237,7 +260,7 @@ bool ww_decode::is_well_formed( ) {
     
   }
   
-  return true;
+  return true; // All checks have passed.
 }
 
 
@@ -257,21 +280,14 @@ void ww_decode::v_bytes_from_frames( ) {
       
 datagram_type_t ww_decode::is_target( ) {
 
-  switch ( u16_frame[ 0 ] ) {
-  case 0x0020:
+  if(( u16_frame[ 0 ] == 0x0020 ) && ( u16_frame[ 1 ] == 0x0001 ) && ( u16_frame[ 3 ] == 0x0000 )) {
     return PWS;
-    break;
-  case 0x009C:
-    return HRM;
-    break;
-  case 0x0011:
-    return AWS;
-    break;
-  case 0x0010:
-    return ARO;
-    break;
-  default: return NOTA;
   }
+  else if( u16_frame[ 0 ] == 0x009C ) return HRM;
+  else if(( u16_frame[ 0 ] == 0x0011 ) && ( u16_frame[ 1 ] == 0x0001 )) return AWS;
+  else if(( u16_frame[ 0 ] == 0x0010 ) && ( u16_frame[ 1 ] == 0x0001 )) return ARO;
+  else return NOTA;
+
 }
 
 
@@ -280,13 +296,13 @@ double ww_decode::d_pws_from_datagram( ) {
 
 //
 // 20  01  XX  XX
-// XXXX/10
+// Speed in knots = XXXX / 10
+// Ignore u16_frame[ 3 ]
 //
 
-  return (double)( u16_frame[ 2 ] + 256 * u16_frame[ 3 ] ) / 10.0;
-  
-}
+  return (double)( u16_frame[ 2 ]) / 10.0;
 
+}
 
 
 double ww_decode::d_hrm_from_datagram( ) {

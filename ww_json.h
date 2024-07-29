@@ -21,7 +21,7 @@ class ww_json {
     void v_json_const_02( char* pac_json_const_02 );
     void v_json_const_03( char* pac_json_const_03 );
     void v_json_const_04( char* pac_json_const_04 );
-    void v_json_var_01( e_perspective_t e_perspective, char* pac_json_var_01 );
+    void v_json_var_01( perspective_t e_perspective, char* pac_json_var_01 );
     void v_json_var_02( char* pac_json_var_02 );
     void v_json_var_03( char* pac_json_var_03 );
     void v_json_var_04( char* pac_json_var_04 );
@@ -131,6 +131,11 @@ class ww_json {
 
     String s_vr_x; // x and y coordinates of the VMG vector (pixels) relative to the centre of the panel.
     String s_vr_y;
+
+ //   radial_vector_t xd_gh; // VMG radial vector.
+
+    String s_crs_dot_x; // x and y coordinates of the centre of the GNSS course dot (pixels) relative to the centre of the panel.
+    String s_crs_dot_y;
 
     component_vector_t xd_rp; // Rudder post radial vector.
 

@@ -28,15 +28,15 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Choose HRM and CRN such that CRN - HRM is close to MRN ( -12.8 ).  
 // Otherwise the resulting CRH and VMG will be unrealistic.
 
-// #define SEATALK_DATA_AVAILABLE
-// #define GNSS_DATA_AVAILABLE
+#define SEATALK_DATA_AVAILABLE
+#define GNSS_DATA_AVAILABLE
 
-#define DEMO_PWS 5.0
+#define DEMO_PWS 4.0
 #define DEMO_HRM -30.0
-#define DEMO_AWS 6.0
+#define DEMO_AWS 8.0
 #define DEMO_ARO -30.0
-#define DEMO_BRE -2.0
-#define DEMO_BRN 2.0
+#define DEMO_SNS 5.0
+#define DEMO_GRN -45.0
 #define DEMO_RDR 10.0
 
 #include "ww_constants.h"
@@ -54,7 +54,7 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <WiFi.h>
 #include <WebServer.h>
 #include "ww_client.h"
-#include "ArduinoJson.h"
+#include <ArduinoJson.h>
 #include <WebSocketsServer.h>
 #include <ESPmDNS.h>
 
@@ -129,11 +129,6 @@ void setup() {
 
 // Set up a wifi access point.
 
-  printf( WiFi.softAPConfig( local_ip, gateway, subnet ) ? "SoftAP CONFIG SUCCESS\n" : "SoftAP CONFIG FAIL\n" );
-  delay(100);
-  printf( WiFi.softAP( ssid ) ? "SoftAP START SUCCESS\n" : "SoftAP START FAILl\n" );
-  delay(100);
-
   ww_client::v_begin( );
   ww_page::v_begin( );
   ww_decode::v_begin( pau32_transition, pu16_transition_index_max, &seatalk_data );
@@ -170,7 +165,7 @@ void setup() {
 
   s8_updates_per_heart_beat = int8_t( HMI_UPDATE_RATE / HEART_BEAT_RATE );
   s8_update_count = 0;
-  var_display_data.s8_heart_beat = 0;
+  var_display_data.s8_hb = 0;
 
   s8_debounce_count = DEBOUNCE_COUNT;
 
@@ -218,7 +213,7 @@ void loop() {
  
     if( s8_update_count >= s8_updates_per_heart_beat ) {
 
-      var_display_data.s8_heart_beat ^= 0x01;
+      var_display_data.s8_hb ^= 0x01;
       s8_update_count = 0;
 
     }
@@ -233,7 +228,7 @@ void loop() {
 
 // Get unfiltered north and east components of boat speed from gnss data.
 
-    gnss.v_x_cr_from_gnss( );
+    gnss.v_x_gr_from_gnss( );
     
 #ifndef SEATALK_DATA_AVAILABLE
 
@@ -251,8 +246,8 @@ void loop() {
 
 // Overwrite data with hard-coded demonstration values.
 
-    gnss_data.x_cr.x = DEMO_BRE;
-    gnss_data.x_cr.y = DEMO_BRN;
+    gnss_data.x_gr.l = DEMO_SNS;
+    gnss_data.x_gr.a = DEMO_GRN;
 
 #endif
 
@@ -276,7 +271,7 @@ void loop() {
           json.v_json_null( pac_json_var );
         }
         else if( ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->pac_html == ww_page::ac_html_01 ) {
-          e_perspective_t e_perspective = ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->e_perspective;
+          perspective_t e_perspective = ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->e_perspective;
           json.v_json_var_01( e_perspective, pac_json_var );
         }
         else if( ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->pac_html == ww_page::ac_html_02 ) {

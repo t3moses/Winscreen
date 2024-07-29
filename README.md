@@ -14,3 +14,12 @@ These facilities allow for processing of basic boat data and display of the resu
 on a connected Wi-Fi device.
 
 The hardware is based on an Espressif ESP32C3.  The source code is C++.
+
+To dos
+
+1. Get all pages to display.
+2. Get SNS and GRS directly from the GNSS module instead of from a series of fixes.
+3. Calculate and display course based on GRS.
+4. Calculate and display leeway based on GRS.
+5. Remove the wind-up and bow-up displays.
+

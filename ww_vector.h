@@ -13,8 +13,8 @@ namespace ww_vector {
       component_vector_t x_component_from_radial( radial_vector_t x_radial_vector );
       component_vector_t x_add_component( component_vector_t x_component_vector_1, component_vector_t x_component_vector_2 );      
       component_vector_t x_subtract_component( component_vector_t x_component_vector_1, component_vector_t x_component_vector_2 );
-      radial_vector_t x_reflect_x( radial_vector_t x_radial_vector );
-      radial_vector_t x_reflect_y( radial_vector_t x_radial_vector );
+      radial_vector_t x_reflect_ref( radial_vector_t x_radial_vector );
+      radial_vector_t x_reflect_quad( radial_vector_t x_radial_vector );
       radial_vector_t x_rotate( radial_vector_t x_radial_vector, double d_angle );
       radial_vector_t x_subtract_radial( radial_vector_t x_radial_vector_1, radial_vector_t x_radial_vector_2 );
       double d_angle_from_radial( radial_vector_t x_radial_vector );

@@ -10,10 +10,11 @@
 
 #include "ww_constants.h"
 
+typedef enum { HDG, FIX, CRS } course_t;
 typedef enum { PWS, HRM, AWS, ARO, NOTA } datagram_type_t;
 typedef enum { ADMIN, USER } client_role_t;
 typedef enum { WAITING_FOR_CONNECTION, WAITING_FOR_VARIABLES } client_state_t;
-typedef enum { NORTH_UP, HEAD_UP, WIND_UP } e_perspective_t;
+typedef enum { NORTH_UP, HEAD_UP, WIND_UP } perspective_t;
 
 struct component_vector_t {
 
@@ -29,7 +30,7 @@ struct component_vector_t {
 struct radial_vector_t {
 
 //
-// l is the length, a is the angle clockwise from ahead.
+// l is the length, a is the angle clockwise from reference.
 //
 
   double l;
@@ -57,7 +58,7 @@ struct seatalk_data_t {
 
 struct gnss_data_t {
   
-  component_vector_t x_cr;
+  radial_vector_t x_gr;
 
 };
 
@@ -65,23 +66,25 @@ struct var_display_data_t {
 
 // Results of vector calculations for perspective by ww_json.
 
-  radial_vector_t xd_nh; // true north relative to heading in feet and degrees
-  radial_vector_t xd_mh; // magnetic north relative to heading in feet and degrees
-  radial_vector_t xd_ch; // speed/course relative to heading
+  radial_vector_t xd_nh; // true north arrow point relative to heading in feet and degrees
+  radial_vector_t xd_mh; // magnetic north arrow point relative to heading in feet and degrees
+  radial_vector_t xd_gh; // speed/course relative to heading according to GNSS
+  radial_vector_t xd_ch; // speed/course relative to heading according to selected source (SeaTalk or GNSS)
   radial_vector_t xd_th; // true wind relative to heading
   radial_vector_t xd_ah; // apparent wind relative to heading
   radial_vector_t xd_vh; // vmg relative to heading
-  radial_vector_t xd_hh[ HULL_POINTS_BOUND + 1 ]; // hull shape
+  radial_vector_t axd_hh[ HULL_POINTS_BOUND + 1 ]; // hull shape
   radial_vector_t xd_rh; // compressed rudder vector relative to rudder post and heading
   radial_vector_t xd_ph; // rudder post relative to boat centre and heading
-  double d_vmg; // vmg
-  double d_dev; // compass deviation in degrees.
-  double d_crn; // course relative to true north in degrees.
-  bool b_upwind; // true value indicates upwind vmg.
-  double d_crh; // leeway
-  double d_trn; // north-relative true wind
-  int8_t s8_heart_beat; // Indicates whether heart beat is on or off.
-  char ac_utc[ 7 ]; // UTC time from satellite.
+  double d_vt; // vmg
+  double d_ch; // coourse relative to heading according to selected source (SeaTalk or GNSS), degrees
+  double d_gh; // leeway according to GNSS
+  double d_tn; // true wind relative to true north, degrees
+  double d_cd; // compass deviation, degrees
+  double d_cn; // course relative to true north according to GNSS, degrees
+  bool b_up; // true value indicates upwind vmg
+  int8_t s8_hb; // Indicates whether heart beat is on or off
+  char ac_utc[ 7 ]; // UTC time from satellite
 
 };
 

@@ -14,7 +14,7 @@ class ww_page {
 // Instance constructor polymorphisms.
     
     ww_page( char* pac_html );
-    ww_page( char* pac_html, e_perspective_t e_perspective );
+    ww_page( char* pac_html, perspective_t e_perspective );
     static void v_begin( );
 
 // Class variables.
@@ -30,7 +30,7 @@ class ww_page {
 
 // Instance variables.
 
-    e_perspective_t e_perspective;
+    perspective_t e_perspective;
     char ac_html[ HTML_BOUND + 1 ];
     char* pac_html = ac_html;
 

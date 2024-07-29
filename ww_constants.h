@@ -21,15 +21,15 @@
 
 #define BAUD_RATE 4800
 #define BITS_PER_FRAME 11
-#define MIN_FRAMES_PER_TARGET_DATAGRAM 4 // Target datagrams contain at least this number of frames.
-#define MAX_FRAMES_PER_TARGET_DATAGRAM 4 // Target datagrams contain no more than this number of frames.
-#define FRAME_INDEX_BOUND 6 // Upper bound on the number of frames in a datagram (not just target datagrams).
+#define BIT_TIME_THRESHOLD 0.75 // Allows for start bits of 1 or 1.5 bits duration.
+#define MAX_FRAMES_PER_TARGET_DATAGRAM 5 // Target datagrams contain no more than this number of frames.
+#define FRAME_INDEX_BOUND 4 // Upper bound on the index of frames in a datagram (not just target datagrams).
 #define TRANSITION_INDEX_BOUND ( BITS_PER_FRAME * FRAME_INDEX_BOUND ) // Upper bound on the number of transitions in a datagram.
 #define MAXLONG 0xFFFFFFFF
 #define DATAGRAM_WATCHDOG_PRESCALE 2048
 #define TICKS_PER_FRAME (uint16_t)((( FCPU / DATAGRAM_WATCHDOG_PRESCALE ) * BITS_PER_FRAME ) / BAUD_RATE )
 #define SEATALK_BUS GPIO_NUM_20 // GPIO20 - XIAO ESP32C3 Pin 8.
-#define INITIAL_AW_OFFSET -22.5 // Initial wind vane offset.  Seatalk ARH value when head-to-wind.
+#define INITIAL_AW_OFFSET 0.0 // Initial wind vane offset.  Seatalk reported apparent wind angle value when head-to-wind.
 
 // GNSS constants.
 
@@ -45,7 +45,7 @@
 #define I2C_TIMEOUT_MILLIS 20
 #define I2C_TIMEOUT_TICKS ( I2C_TIMEOUT_MILLIS / portTICK_PERIOD_MS )
 
-#define SNS_THRESHOLD 0.5 // Course and speed are ignored below this threshold.
+#define SNS_THRESHOLD 0.5 // Course and speed are ignored below this threshold, knots.
 
 // Web socket constants.
 
@@ -57,7 +57,7 @@
 
 // HMI constants
 
-#define HMI_UPDATE_RATE 6.0 // The display update rate in Hz.
+#define HMI_UPDATE_RATE 6.0 // The display update rate, Hz.
 #define HMI_UPDATE_PRESCALER 2048
 #define TICKS_PER_HMI_UPDATE_INTERVAL ( FCPU / ( HMI_UPDATE_PRESCALER * (uint16_t)HMI_UPDATE_RATE ))
 #define PIXELS_PER_FOOT 5.0 // Scale of Page 1 (overview display)
@@ -77,10 +77,10 @@
 #define BACKGROUND "rgba(0,0,0,1.0)" // Black.
 #define HULL_COLOUR "rgba(127,127,127,1.0)" // Opaque grey.
 #define HULL_SCALE 1.6 // Defines the size of the displayed boat hull.
-#define RUDDER_COLOUR "rgba(255,255,255,1.0)" // Opaque white. 
+#define RUDDER_COLOUR "rgba(255,255,255,1.0)" // Opaque white.
 #define RUDDER_WEIGHT 8
 #define RUDDER_POST_Y 11.0 // Y position of the rudder post in relation to the origin (feet).
-#define RUDDER_LENGTH 3.0 // Feet.
+#define RUDDER_RADIUS 3.0 // Feet.
 #define RUDDER_FORMULA_S0 3.5 // Parameters of the rudder angle compression function.
 #define RUDDER_FORMULA_S1 0.0
 #define RUDDER_FORMULA_MAX_X 90.0 // Degrees.
@@ -101,6 +101,9 @@
 #define VMG_DOWNWIND_SHADOW_COLOUR "rgba(255,255,255,1.0)"
 #define VMG_WEIGHT 4
 #define VMG_SHADOW_WEIGHT 2
+#define GNSS_COURSE_DOT_RADIUS 20 // Distance from the display centre to the GNSS course dot (feet).
+#define GNSS_COURSE_DOT_COLOUR "rgb(255,192,203,1.0)" // Colour of the GNSS course dot.
+#define GNSS_COURSE_DOT_SIZE 1 // Radius of the GNSS course dot (feet).
 
 #define PANEL_WIDTH 300 // Pixels
 #define VECTOR_PANEL_HEIGHT 300
@@ -114,20 +117,22 @@
 
 #define HULL_POINTS_BOUND 12 // Number of points in the hull shape minus 1.
 #define COMPASS_RADIUS 25 // Radius of compass needle point (feet).
+#define COURSE_RADIUS 25 // Radius of course needle point (feet).
 #define TRUE_NORTH_COLOUR "rgba(255,255,255,1.0)" // Colour of the true north indicator.
 #define MAGNETIC_NORTH_COLOUR "rgba(255,255,255,1.0)" // Colour of the magnetic north indicator.
+#define COURSE_COLOUR "rgba(255,255,210,1.0)" // Pale yellow.  Colour of the course indicator.
 #define MAGNETIC_NORTH_WEIGHT 2
 #define NORTH_POINT_ANGLE 15 // Half the angle at point of north arrow (degrees)
 #define NORTH_SIDE 20.0 // Length of the side of the north triangle (pixels).
-#define ARH_BAND 180.0 // ARH change represented by the ARH strip, degrees. 
-#define CRH_BAND 40.0 // CRH change represented by the CRH strip, degrees.
-#define VMG_BAND 10.0 // VMG change represented by the VMG strip, knots.
-#define TRN_BAND 360.0 // TRN change represented by the TRN strip, degrees.
+#define AH_BAND 180.0 // ARH change represented by the ARH ribbon, degrees.
+#define CH_BAND 40.0 // CRH change represented by the CRH ribbon, degrees.
+#define VT_BAND 10.0 // VMG change represented by the VMG ribbon, knots.
+#define TN_BAND 360.0 // TRN change represented by the TRN ribbon, degrees.
 
 // Heartbeat constants
 
-#define HEART_BEAT_X 5 // Top left of square, pixels from left in pixels.
-#define HEART_BEAT_Y 5 // Top left of square, pixels below top in pixels.
+#define HEART_BEAT_X 5 // Top left of square from left edge of display, pixels.
+#define HEART_BEAT_Y 5 // Top left of square from top edge of display, pixels.
 #define HEART_BEAT_SIDE 15 // Length of side of square in pixels.
 #define HEART_BEAT_RATE 2.0 // Hz.
 #define HEART_BEAT_COLOUR_ON "rgba(255,255,255,1.0)" // Opaque white.
@@ -188,12 +193,12 @@ const int8_t as8_hull[ 30 ] = {
 #define P4_TEXT_COLOUR "rgba(255,255,255,1.0)"
 #define P4_PANEL_WIDTH PANEL_WIDTH
 #define P4_PANEL_HEIGHT 425
-#define P4_ROW_TOP_1 50
-#define P4_ROW_TOP_2 150
-#define P4_ROW_TOP_3 210
-#define P4_ROW_TOP_4 310
-#define P4_ROW_TOP_5 370
-#define P4_ROW_TOP_6 410
+#define P4_ROW_TOP_1 60
+#define P4_ROW_TOP_2 120
+#define P4_ROW_TOP_3 180
+#define P4_ROW_TOP_4 240
+#define P4_ROW_TOP_5 280
+#define P4_ROW_TOP_6 340
 
 // Second-order low-pass data filter constants.
 

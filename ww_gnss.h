@@ -13,13 +13,13 @@ class ww_gnss {
   
     ww_gnss();
     void v_begin( var_display_data_t* p_var_display_data, gnss_data_t* p_gnss_data );
-    void v_x_cr_from_gnss( );
+    void v_x_gr_from_gnss( );
     
   private:
   
     void v_nmea_from_gnss( );
     bool b_fix_from_gxgll( );
-    void v_x_cr_from_afix_series( );
+    void v_x_gr_from_afix_series( );
     void v_utc_time_from_pac( const char* pac_tim );
     double d_utc_hours_from_pac( char* pac_tim );
     double d_lat_minutes_from_pac( char* pac_lat, char* pac_n_s );
@@ -73,6 +73,8 @@ class ww_gnss {
 
     char ac_w_e[ FIELD_INDEX_BOUND + 1 ];
     char* pac_w_e = ac_w_e;
+
+    component_vector_t x_gc;
 
     gnss_data_t* p_gnss_data;
     var_display_data_t* p_var_display_data;
