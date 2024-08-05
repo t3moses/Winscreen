@@ -193,11 +193,11 @@ const int8_t as8_hull[ 30 ] = {
 #define P4_PANEL_WIDTH PANEL_WIDTH
 #define P4_PANEL_HEIGHT 425
 #define P4_ROW_TOP_1 60
-#define P4_ROW_TOP_2 120
-#define P4_ROW_TOP_3 180
-#define P4_ROW_TOP_4 240
-#define P4_ROW_TOP_5 280
-#define P4_ROW_TOP_6 340
+#define P4_ROW_TOP_2 160
+#define P4_ROW_TOP_3 220
+#define P4_ROW_TOP_4 320
+#define P4_ROW_TOP_5 380
+#define P4_ROW_TOP_6 410
 
 // Second-order low-pass data filter constants.
 
