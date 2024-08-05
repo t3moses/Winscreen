@@ -89,6 +89,8 @@
 #define BOAT_SHADOW_COLOUR "rgba(255,255,210,1.0)"
 #define BOAT_WEIGHT 8
 #define BOAT_SHADOW_WEIGHT 2
+#define SAT_COLOUR "rgb(255,192,203,1.0)" // Colour of the GNSS vector.
+#define SAT_WEIGHT 2
 #define TW_COLOUR "rgba(255,210,255,1.0)" // Pale magenta.  Colour of the true wind vector (TWS and TRH).
 #define TW_SHADOW_COLOUR "rgba(255,210,255,1.0)"
 #define TW_WEIGHT 8
@@ -101,9 +103,6 @@
 #define VMG_DOWNWIND_SHADOW_COLOUR "rgba(255,255,255,1.0)"
 #define VMG_WEIGHT 4
 #define VMG_SHADOW_WEIGHT 2
-#define GNSS_COURSE_DOT_RADIUS 20 // Distance from the display centre to the GNSS course dot (feet).
-#define GNSS_COURSE_DOT_COLOUR "rgb(255,192,203,1.0)" // Colour of the GNSS course dot.
-#define GNSS_COURSE_DOT_SIZE 1 // Radius of the GNSS course dot (feet).
 
 #define PANEL_WIDTH 300 // Pixels
 #define VECTOR_PANEL_HEIGHT 300

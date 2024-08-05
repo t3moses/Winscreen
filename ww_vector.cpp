@@ -78,7 +78,7 @@ void ww_vector::v_display_from_instruments( ) {
   ww_vector::p_var_display_data->xd_rh = ww_vector::x_reflect_quad( ww_vector::x_compress_angle( ww_vector::x_radial_from_component( rd_filter.x_step( x_component_from_l_a( RUDDER_RADIUS, ww_vector::p_seatalk_data->d_rdr )))));
   ww_vector::p_var_display_data->xd_nh = ww_vector::x_reflect_ref( xd_hrn );
   ww_vector::p_var_display_data->xd_mh = ww_vector::x_reflect_ref( xd_hrm );
-  xd_grh = ww_vector::x_radial_from_component( gc_filter.x_step( ww_vector::x_component_from_l_a( ww_vector::p_gnss_data->x_gr.l, ww_vector::d_add_angle( ww_vector::p_gnss_data->x_gr.a, -d_hrn ))));
+  xd_grh = ww_vector::x_radial_from_component( gc_filter.x_step( ww_vector::x_component_from_l_a( ww_vector::p_gnss_data->d_sns, ww_vector::d_add_angle( ww_vector::p_gnss_data->d_grn, -d_hrn ))));
   ww_vector::p_var_display_data->xd_ch = ( e_course == HDG ) ?
     ww_vector::x_radial_from_component( sc_filter.x_step( 
 	  ww_vector::x_component_from_l_a( ww_vector::p_seatalk_data->d_pws, 0.0 ))) :
@@ -95,9 +95,10 @@ void ww_vector::v_display_from_instruments( ) {
   d_crt = ww_vector::d_add_angle( d_crh, d_hrt );
   ww_vector::p_var_display_data->d_vt = ww_vector::d_projection( ww_vector::d_length_from_radial( ww_vector::p_var_display_data->xd_ch ), d_crt );
   ww_vector::p_var_display_data->d_tn = ww_vector::d_add_angle( d_trh, d_hrn );
-  ww_vector::p_var_display_data->d_ch = ww_vector::p_gnss_data->x_gr.a - d_hrm - (double)ww_vector::p_correction_data->s16_mrn;
+  ww_vector::p_var_display_data->d_ch = ww_vector::p_gnss_data->d_grn - d_hrm - (double)ww_vector::p_correction_data->s16_mrn;
   ww_vector::p_var_display_data->b_up = (( d_crt >= -90.0 ) && ( d_crt <= 90.0 ));
   ww_vector::p_var_display_data->xd_vh = ww_vector::x_radial_from_component( ww_vector::x_component_from_l_a( ww_vector::p_var_display_data->d_vt, d_trh ));
+  ww_vector::p_var_display_data->pac_utc = ww_vector::p_gnss_data->pac_utc;
 
 }
 

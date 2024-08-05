@@ -2,19 +2,29 @@
 #include "ww_types.h"
 #include "ww_constants.h"
 #include "ww_gnss.h"
-#include "ww_vector.h"
 #include <driver/i2c.h>
+
+uint8_t aus_nmea[ NMEA_INDEX_BOUND + 1 ];
+uint8_t* paus_nmea = aus_nmea;
+
+uint8_t aus_sns[ FIELD_INDEX_BOUND + 1 ];
+uint8_t* paus_sns = aus_sns;
+
+uint8_t aus_crn[ FIELD_INDEX_BOUND + 1 ];
+uint8_t* paus_crn = aus_crn;
+
+char ac_utc[ FIELD_INDEX_BOUND + 1 ];
+char* pac_utc = ac_utc;
 
 
 
 ww_gnss::ww_gnss() {}
 
-void ww_gnss::v_begin( var_display_data_t* p_var_display_data, gnss_data_t* p_gnss_data ) {
+void ww_gnss::v_begin( gnss_data_t* p_gnss_data ) {
 
 // Make library-global copies of project-global pointers.
 
   ww_gnss::p_gnss_data = p_gnss_data;
-  ww_gnss::p_var_display_data = p_var_display_data;
 
 // Configure the I2C API.
   
@@ -29,103 +39,60 @@ void ww_gnss::v_begin( var_display_data_t* p_var_display_data, gnss_data_t* p_gn
   i2c_param_config( I2C_NUM_0, &i2c_configuration );
   i2c_driver_install( I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0 );
 
-// Initialize the index to the array of fixes
-// and the heartbeat status.
-
-  s16_current_fix_index = 0;
-  p_var_display_data->s8_hb = 0;
+  for(uint8_t u8_index = 0; u8_index < FIELD_INDEX_BOUND; u8_index++ ) {
+    ac_utc[ u8_index ] = '-';
+  }
+  ac_utc[ FIELD_INDEX_BOUND ] = '\0';
 
 }
 
 
-void ww_gnss::v_x_gr_from_gnss( ) {
 
-// Input a chunk of GNSS data.
+void ww_gnss::v_sns_crn_utc_from_gnss( ) {
 
   v_nmea_from_gnss( );
 
-// If the chunk completes the data for a fix ...
+// Convert aus_sns[ ] and aus_crn[ ] to d_sns and d_grn.
 
-  if( b_fix_from_gxgll( )) {
+  double d_sns = d_double_from_paus_number( paus_sns );
+  double d_grn = d_double_from_paus_number( paus_crn );
 
-// Toggle the heartbeat status.
+  if( d_sns < SNS_THRESHOLD ) { d_sns = 0.0; d_grn = 0.0; }
 
-    p_var_display_data->s8_hb ^= 0x01;
+  if( b_sns_from_nmea( )) {
 
-    double d_fix_hours = ww_gnss::d_utc_hours_from_pac( pac_tim );
-    if( d_fix_hours != ax_fix_series[ s16_current_fix_index ].d_utc_hours ) {
+    ww_gnss::p_gnss_data->d_sns = d_sns;
 
-// Only if the fix is new, increment s16_current_fix_index mod FIX_SERIES_INDEX_MAX.
-// And add the fix to the series of fixes, deleting the oldest one.
-
-      s16_previous_fix_index = s16_current_fix_index;
-      s16_current_fix_index = ( s16_current_fix_index < FIX_SERIES_INDEX_MAX ) ? ( s16_current_fix_index + 1 ) : 0;
-
-      ax_fix_series[ s16_current_fix_index ].d_utc_hours = ww_gnss::d_utc_hours_from_pac( pac_tim );
-      ax_fix_series[ s16_current_fix_index ].d_latitude_minutes = ww_gnss::d_lat_minutes_from_pac( pac_lat, pac_n_s );
-      ax_fix_series[ s16_current_fix_index ].d_longitude_minutes = ww_gnss::d_lon_minutes_from_pac( pac_lon, pac_w_e );
-
-// Use the fix data to calculate the north and east components of boat speed.
-
-      ww_gnss::v_x_gr_from_afix_series( );
-
-      ww_gnss::v_utc_time_from_pac( pac_tim );
-
-    }
   }
-}
 
+  if( b_crn_from_nmea( )) {
+    
+    ww_gnss::p_gnss_data->d_grn = d_grn;
 
-
-void ww_gnss::v_x_gr_from_afix_series( ) {
-
-// Calculate the north and east components of boat speed in knots.
-// Take account of roll-over at midnight UTC and 180 degrees longitude.
-// One knot is one minute of latitude per hour.
-
-  double d_delta_time_hours = ax_fix_series[ s16_current_fix_index ].d_utc_hours - ax_fix_series[ s16_previous_fix_index ].d_utc_hours;
-  d_delta_time_hours = ( d_delta_time_hours >= 0.0 )? d_delta_time_hours: d_delta_time_hours + 24.0 * 60.0;
-
-  double d_delta_latitude_minutes = ax_fix_series[ s16_current_fix_index ].d_latitude_minutes - ax_fix_series[ s16_previous_fix_index ].d_latitude_minutes;
-
-  double d_delta_longitude_minutes = ax_fix_series[ s16_current_fix_index ].d_longitude_minutes - ax_fix_series[ s16_previous_fix_index ].d_longitude_minutes;
-
-  if( d_delta_longitude_minutes > ( 180.0 * 60.0 )) d_delta_longitude_minutes -= ( 360.0 * 60.0 );
-  else if( d_delta_longitude_minutes < ( -180.0 * 60.0 )) d_delta_longitude_minutes += ( 360.0 * 60.0 );
-
-  x_gc.x = d_delta_longitude_minutes * cos(( RADIANS_FROM_DEGREES / 60.0 ) * ax_fix_series[ s16_current_fix_index ].d_latitude_minutes ) / d_delta_time_hours;
-  x_gc.y = d_delta_latitude_minutes / d_delta_time_hours;
-
-  p_gnss_data->x_gr = ww_vector::x_radial_from_component( x_gc );
-
-}
-
-
-
-void ww_gnss::v_utc_time_from_pac( const char* pac_tim ) {
-
-  for( uint8_t u8_index = 0; u8_index <= 5; u8_index++ ) {
-    p_var_display_data->ac_utc[ u8_index ] = *( pac_tim + u8_index );
   }
-  p_var_display_data->ac_utc[ 6 ] = '\0';
 
+  if( b_utc_from_nmea( )) {
+    
+    ww_gnss::p_gnss_data->pac_utc = pac_utc;
+
+  }
 }
 
 
 
 void ww_gnss::v_nmea_from_gnss( ) {
  
-// Fill au8_nmea[ ] with NMEA_INDEX_MAX + 1 characters from the gnss module.
+// Fill aus_nmea[ ] with NMEA_INDEX_MAX + 1 characters from the gnss module.
 
   i2c_cmd_handle_t cmd1 = i2c_cmd_link_create();
   i2c_master_start( cmd1 );
   i2c_master_write_byte( cmd1, ( GNSS_ADDRESS << 1 ) | I2C_MASTER_READ, true );
   
-  for( uint8_t u8_index = 0; u8_index <= ( NMEA_INDEX_MAX - 1 ); u8_index++ ) {
-    i2c_master_read_byte( cmd1, pau8_nmea + u8_index, I2C_MASTER_ACK );    
+  for( uint8_t us_index = 0; us_index <= ( NMEA_INDEX_MAX - 1 ); us_index++ ) {
+    i2c_master_read_byte( cmd1, paus_nmea + us_index, I2C_MASTER_ACK );    
   }
 
-  i2c_master_read_byte( cmd1, pau8_nmea + NMEA_INDEX_MAX, I2C_MASTER_NACK );    
+  i2c_master_read_byte( cmd1, paus_nmea + NMEA_INDEX_MAX, I2C_MASTER_NACK );    
 
   i2c_master_stop( cmd1 );
   i2c_master_cmd_begin( I2C_NUM_0, cmd1, I2C_TIMEOUT_TICKS );
@@ -135,13 +102,143 @@ void ww_gnss::v_nmea_from_gnss( ) {
 
 
 
-bool ww_gnss::b_fix_from_gxgll(  ) {
+bool ww_gnss::b_sns_from_nmea(  ) {
 
 //
-// Parse the NMEA data for the $GxGGA datagram fix fields,
-// including UTC time, latitude, N/S indicator, longitude and E/W
-// indicator.   These are stored in character arrays au8_tim[ ], 
-// au8_lat[ ], au8_n_s[ ], au8_lat[ ] and au8_n_s[ ].
+// Parse the NMEA data for the $GxVTG datagram.
+// Extract the speed field.
+//
+
+uint8_t us_nmea;
+bool b_valid;
+static uint8_t state = 0;
+uint8_t us_nmea_index;
+static uint8_t us_field_index;
+
+  us_nmea_index = 0;
+
+  while( true ) {
+    
+    us_nmea = aus_nmea[ us_nmea_index ];
+    
+    switch ( state ) {
+    case 0:
+      if( us_nmea == '$' ) state = 1;
+      break;
+    case 1:
+      if( us_nmea == 'G' ) state = 2;
+      else state = 0;
+      break;
+    case 2:
+      state = 3;
+      break;
+    case 3:
+      if( us_nmea == 'V' ) state = 4;
+      else state = 0;
+      break;
+    case 4:
+      if( us_nmea == 'T' ) state = 5;
+      else state = 0;
+      break;
+    case 5:
+      if( us_nmea == 'G' ) state = 6;
+      else state = 0;
+      break;
+    case 6:
+      if( us_nmea == ',' ) state = 7;
+      break;
+    case 7:
+      if( us_nmea == ',' ) state = 8;
+      break;
+    case 8:
+      if( us_nmea == ',' ) state = 9;
+      break;
+    case 9:
+      if( us_nmea == ',' ) state = 10;
+      break;
+    case 10:
+      if( us_nmea == ',' ) { b_valid = false; us_field_index = 0; state = 11; }
+      break;
+    case 11:
+      if( us_nmea == ',' ) { aus_sns[ us_field_index ] = '\0'; b_valid = true; state = 0; }
+      else { aus_sns[ us_field_index ] = us_nmea; us_field_index++; }
+      break;
+    }          
+
+    if( us_nmea_index >= NMEA_INDEX_MAX ) return b_valid;
+    
+    us_nmea_index++;
+
+  }
+}
+
+
+
+bool ww_gnss::b_crn_from_nmea(  ) {
+
+//
+// Parse the NMEA data for the $GxVTG datagram.
+// Extract the course field.
+//
+
+uint8_t us_nmea;
+bool b_valid;
+static uint8_t state = 0;
+uint8_t us_nmea_index;
+static uint8_t us_field_index;
+
+  us_nmea_index = 0;
+  
+  while( true ) {
+    
+    us_nmea = aus_nmea[ us_nmea_index ];
+
+    switch ( state ) {
+    case 0:
+      if( us_nmea == '$' ) state = 1;
+      break;
+    case 1:
+      if( us_nmea == 'G' ) state = 2;
+      else state = 0;
+      break;
+    case 2:
+      state = 3;
+      break;
+    case 3:
+      if( us_nmea == 'V' ) state = 4;
+      else state = 0;
+      break;
+    case 4:
+      if( us_nmea == 'T' ) state = 5;
+      else state = 0;
+      break;
+    case 5:
+      if( us_nmea == 'G' ) state = 6;
+      else state = 0;
+      break;
+    case 6:
+      if( us_nmea == ',' ) { b_valid = false; us_field_index = 0; state = 7; }
+      break;
+    case 7:
+      if( us_nmea == ',' ) { aus_crn[ us_field_index ] = '\0'; b_valid = true; state = 0; }
+      else { aus_crn[ us_field_index ] = us_nmea; us_field_index++; }
+      break;
+    }          
+
+    if( us_nmea_index >= NMEA_INDEX_MAX ) return b_valid;
+    
+    us_nmea_index++;
+
+  }
+}
+
+
+
+bool ww_gnss::b_utc_from_nmea( ) {
+
+//
+// Parse the NMEA data for the $GxGGA datagram.
+// Extract the utc field.
 //
 
 uint8_t u8_nmea;
@@ -151,10 +248,10 @@ uint8_t u8_nmea_index;
 static uint8_t u8_field_index;
 
   u8_nmea_index = 0;
-
+  
   while( true ) {
     
-    u8_nmea = (char)au8_nmea[ u8_nmea_index ];
+    u8_nmea = aus_nmea[ u8_nmea_index ];
 
     switch ( u8_state ) {
     case 0:
@@ -183,100 +280,20 @@ static uint8_t u8_field_index;
       if( u8_nmea == ',' ) { b_valid = false; u8_field_index = 0; u8_state = 7; }
       break;
     case 7:
-      if( u8_nmea == ',' ) { ac_tim[ u8_field_index ] = '\0'; u8_field_index = 0; u8_state = 8; }
-      else { ac_tim[ u8_field_index ] = u8_nmea; u8_field_index++; }
+      if(( u8_nmea == ',' ) || ( u8_nmea == '.' )) { ac_utc[ u8_field_index ] = '\0'; b_valid = true; u8_state = 0; }
+      else { ac_utc[ u8_field_index ] = u8_nmea; u8_field_index++; }
       break;
-    case 8:
-      if( u8_nmea == ',' ) { ac_lat[ u8_field_index ] = '\0'; u8_field_index = 0; u8_state = 9; }
-      else { ac_lat[ u8_field_index ] = u8_nmea; u8_field_index++; }
-      break;
-    case 9:
-      if( u8_nmea == ',' ) { ac_n_s[ u8_field_index ] = '\0'; u8_field_index = 0; u8_state = 10; }
-      else { ac_n_s[ u8_field_index ] = u8_nmea; u8_field_index++; }
-      break;
-    case 10:
-      if( u8_nmea == ',' ) { ac_lon[ u8_field_index ] = '\0'; u8_field_index = 0; u8_state = 11; }
-      else { ac_lon[ u8_field_index ] = u8_nmea; u8_field_index++; }
-      break;
-    case 11:
-      if( u8_nmea == ',' ) { ac_w_e[ u8_field_index ] = '\0';  b_valid = true; u8_state = 0; }
-      else { ac_w_e[ u8_field_index ] = u8_nmea; u8_field_index++; }
-      break;
-    }          
+  }          
 
     if( u8_nmea_index >= NMEA_INDEX_MAX ) return b_valid;
     
     u8_nmea_index++;
 
-  }
+  } 
 }
 
 
-
-double ww_gnss::d_utc_hours_from_pac( char* pac_tim ) {
-
-//
-// Convert the UTC time character array to hours.
-//
-
-  double d_h = (double)( *( pac_tim + 0 ) - '0' ) * 10.0 +
-    (double)( *( pac_tim + 1 ) - '0' );
-
-  double d_m = (double)( *( pac_tim + 2 ) - '0' ) * 10.0 +
-    (double)( *( pac_tim + 3 ) - '0' );
-
-  double d_s = ww_gnss::d_double_from_pac( pac_tim + 4 );
-
-  return ((( d_s / 60.0 + d_m )) / 60.0 ) + d_h; 
-
-}
-
-
-
-double ww_gnss::d_lat_minutes_from_pac( char* pac_lat, char* pac_n_s ) {
-
-//
-// Convert the latitude and north-south indicator character arrays to minutes.
-//
-
-  double d_d = (double)( *( pac_lat + 0 ) - '0' ) * 10.0 +
-    (double)( *( pac_lat + 1 ) - '0' );
-
-  double d_m = ww_gnss::d_double_from_pac( pac_lat + 2 );
-
-  double d_mins = d_d * 60.0 + d_m;
-
-  if( *pac_n_s == 'S' ) d_mins *= -1.0;
-
-  return d_mins;
-
-}
-
-
-
-double ww_gnss::d_lon_minutes_from_pac( char* pac_lon, char* pac_w_e ) {
-
-//
-// Convert the longitude and west-east indicator character arrays to minutes.
-//
-
-  double d_d = (double)( *( pac_lon + 0 ) - '0' ) * 100.0 +
-    (double)( *( pac_lon + 1 ) - '0' ) * 10.0 +
-    (double)( *( pac_lon + 2 ) - '0' );
-
-  double d_m = ww_gnss::d_double_from_pac( pac_lon + 3 );
-
-  double d_mins = d_d * 60.0 + d_m;
-
-  if( *pac_w_e == 'W' ) d_mins *= -1.0;
-
-  return d_mins;
-
-}
-
-
-
-double ww_gnss::d_double_from_pac( char* pac_char ) {
+double ww_gnss::d_double_from_paus_number( uint8_t* paus_number ) {
 
 //
 // Return the value of a char array as a double.
@@ -291,9 +308,9 @@ double d_fractional_part = 0.0;
 // Convert each character to a uint8_t.  Add its value to the intermediate value,
 // taking account of its position.
 
-  for ( uint8_t u8_index = 0; u8_index <= FIELD_INDEX_BOUND; u8_index++ ) {
+  for ( uint8_t us_index = 0; us_index <= FIELD_INDEX_BOUND; us_index++ ) {
 
-    switch ( *( pac_char + u8_index )) {
+    switch ( *( paus_number + us_index )) {
     case '\0':
       return d_integer_part + d_fractional_part;
       break;
@@ -303,14 +320,28 @@ double d_fractional_part = 0.0;
     default:
       if( b_decimal ) {
         d_divisor *= 10.0;
-        d_fractional_part += (double)( *( pac_char + u8_index ) - '0' ) / d_divisor;
+        d_fractional_part += (double)( *( paus_number + us_index ) - '0' ) / d_divisor;
       }
       else {
         d_integer_part *= 10.0;
-        d_integer_part += (double)( *( pac_char + u8_index ) - '0' );
+        d_integer_part += (double)( *( paus_number + us_index ) - '0' );
       }
       break;
     }
   }
   return 0.0;
+}
+
+
+
+double ww_gnss::normal( double d_abnormal ) {
+
+//
+// Cast an angle in degrees into the range -179.9 .. +180.0.
+//
+
+  if( d_abnormal <= -180.0 ) return d_abnormal + 360.0;
+  else if( d_abnormal > 180.0 ) return d_abnormal - 360.0;
+  else return d_abnormal;
+
 }

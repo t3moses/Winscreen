@@ -38,14 +38,6 @@ struct radial_vector_t {
   
 };
 
-struct fix_t {
-
-  double d_utc_hours; // hours since zulu ( 0.0 .. 23.9999997 ).
-  double d_latitude_minutes; // minutes north of equator ( -5400.0 .. +5400.0 ).
-  double d_longitude_minutes; // minutes east of prime meridian ( -10800.0 .. +10800.0 ).
-  
-};
-
 struct seatalk_data_t {
   
   double d_pws; // Speed according to the paddle wheel.
@@ -58,7 +50,9 @@ struct seatalk_data_t {
 
 struct gnss_data_t {
   
-  radial_vector_t x_gr;
+  double d_sns; // Boat speed as measured by the GNSS module.
+  double d_grn; // Course relative to true north as measure by the GNSS module.
+  char* pac_utc; // Pointer to array of char representing time since midnight zulu as measured by the GNSS module.
 
 };
 
@@ -84,7 +78,7 @@ struct var_display_data_t {
   double d_cn; // course relative to true north according to GNSS, degrees
   bool b_up; // true value indicates upwind vmg
   int8_t s8_hb; // Indicates whether heart beat is on or off
-  char ac_utc[ 7 ]; // UTC time from satellite
+  char* pac_utc; // Pointer to char array containing utc from satellite
 
 };
 

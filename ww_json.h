@@ -63,7 +63,7 @@ class ww_json {
     int16_t s16_arh; // arh x coordinate relative to the panel centre (pixels).
 
     int8_t s8_heart_beat;
-    char ac_utc[ 7 ];
+    char ac_utc[ FIELD_INDEX_BOUND + 1 ];
     char* pac_utc = ac_utc;
 
     double d_hrr; // Heading relative to reference (degrees).  Reference may be true wind direction or true north.

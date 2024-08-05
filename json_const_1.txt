@@ -18,6 +18,10 @@
     "wt" : "_BOAT_WEIGHT_",
     "s_wt" : "_BOAT_SHADOW_WEIGHT_"
   },
+  "st" :
+  { "clr" : "_SAT_COLOUR_",
+    "wt" : "_SAT_WEIGHT_"
+  },
   "tw" :
   { "clr" : "_TW_COLOUR_",
     "s_clr" : "_TW_SHADOW_COLOUR_",
@@ -50,55 +54,68 @@
   }
 }
 
+COMPILING THE ABOVE,
+USING ArduinoJson V7
+AS Espressif ESP32 Dev Module
+Serialize
+char*
+(set doc to specific document name.)
+(set output to a pointer to the output char array.)
+(set outputCapacity to RAM usage from Step 2.)
+GIVES THIS ...
 
 
-StaticJsondocument<1536> doc_const_1;
+JsonDocument const_01;
 
-doc_const_1["contents"] = "CONSTANTS";
+const_01["key"] = "constants";
 
-JsonObject display = doc_const_1.createNestedObject("display");
+JsonObject display = const_01["display"].to<JsonObject>();
 display["bkgnd"] = "_BACKGROUND_";
 display["pw"] = "_PANEL_WIDTH_";
 display["vph"] = "_VECTOR_PANEL_HEIGHT_";
 display["bph"] = "_BALL_PANEL_HEIGHT_";
-doc_const_1["hl"]["clr"] = "_HULL_COLOUR_";
+display["hcr"] = "_HULL_COLOUR_";
 
-JsonObject rdr = doc_const_1.createNestedObject("rdr");
+JsonObject rdr = const_01["rdr"].to<JsonObject>();
 rdr["clr"] = "_RUDDER_COLOUR_";
 rdr["wt"] = "_RUDDER_WEIGHT_";
 
-JsonObject bt = doc_const_1.createNestedObject("bt");
+JsonObject bt = const_01["bt"].to<JsonObject>();
 bt["clr"] = "_BOAT_COLOUR_";
 bt["s_clr"] = "_BOAT_SHADOW_COLOUR_";
 bt["wt"] = "_BOAT_WEIGHT_";
 bt["s_wt"] = "_BOAT_SHADOW_WEIGHT_";
 
-JsonObject tw = doc_const_1.createNestedObject("tw");
+JsonObject st = const_01["st"].to<JsonObject>();
+st["clr"] = "_SAT_COLOUR_";
+st["wt"] = "_SAT_WEIGHT_";
+
+JsonObject tw = const_01["tw"].to<JsonObject>();
 tw["clr"] = "_TW_COLOUR_";
 tw["s_clr"] = "_TW_SHADOW_COLOUR_";
 tw["wt"] = "_TW_WEIGHT_";
 tw["s_wt"] = "_TW_SHADOW_WEIGHT_";
 
-JsonObject aw = doc_const_1.createNestedObject("aw");
+JsonObject aw = const_01["aw"].to<JsonObject>();
 aw["clr"] = "_AW_COLOUR_";
 aw["wt"] = "_AW_WEIGHT_";
 
-JsonObject vmg = doc_const_1.createNestedObject("vmg");
+JsonObject vmg = const_01["vmg"].to<JsonObject>();
 vmg["wt"] = "_VMG_WEIGHT_";
 vmg["s_wt"] = "_VMG_SHADOW_WEIGHT_";
-doc_const_1["n"]["clr"] = "_TRUE_NORTH_COLOUR_";
+doc["n"]["clr"] = "_TRUE_NORTH_COLOUR_";
 
-JsonObject m = doc_const_1.createNestedObject("m");
+JsonObject m = const_01["m"].to<JsonObject>();
 m["clr"] = "_MAGNETIC_NORTH_COLOUR_";
 m["wt"] = "_MAGNETIC_NORTH_WEIGHT_";
-doc_const_1["crh_b"]["clr"] = "_CRH_BALL_COLOUR_";
-doc_const_1["trn_b"]["clr"] = "_TRN_BALL_COLOUR_";
+doc["crh_b"]["clr"] = "_CRH_BALL_COLOUR_";
+doc["trn_b"]["clr"] = "_TRN_BALL_COLOUR_";
 
-JsonObject hbt = doc_const_1.createNestedObject("hbt");
+JsonObject hbt = const_01["hbt"].to<JsonObject>();
 hbt["x"] = "_HEART_BEAT_X_";
 hbt["y"] = "_HEART_BEAT_Y_";
 hbt["s"] = "_HEART_BEAT_SIDE_";
 
-serializeJson(doc_const_1, output);
+const_01.shrinkToFit();  // optional
 
-
+serializeJson(const_01, pac_json_const_01, 2048);

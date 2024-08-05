@@ -65,6 +65,8 @@ void ww_client::v_advance_client( int8_t s8_socket, char ac_value[] ) {
   int8_t s8_this;
   int8_t s8_next;
 
+printf("ac_value: %s\n", ac_value );
+
   s8_client = ww_url::s8_client_from_url( ac_value );
   ww_client::ap_client_list[ s8_client ]->s8_socket = s8_socket;
   s8_this = ww_url::s8_this_from_url( ac_value );

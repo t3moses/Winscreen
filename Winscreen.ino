@@ -28,15 +28,15 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // Choose HRM and CRN such that CRN - HRM is close to MRN ( -12.8 ).  
 // Otherwise the resulting CRH and VMG will be unrealistic.
 
-#define SEATALK_DATA_AVAILABLE
-#define GNSS_DATA_AVAILABLE
+// #define SEATALK_DATA_AVAILABLE
+// #define GNSS_DATA_AVAILABLE
 
 #define DEMO_PWS 4.0
 #define DEMO_HRM -30.0
 #define DEMO_AWS 8.0
 #define DEMO_ARO -30.0
-#define DEMO_SNS 5.0
-#define DEMO_GRN -45.0
+#define DEMO_SNS 4.0
+#define DEMO_GRN -43.0
 #define DEMO_RDR 10.0
 
 #include "ww_constants.h"
@@ -129,13 +129,18 @@ void setup() {
 
 // Set up a wifi access point.
 
+  printf( WiFi.softAPConfig( local_ip, gateway, subnet ) ? "SoftAP CONFIG SUCCESS\n" : "SoftAP CONFIG FAIL\n" );
+  delay(100);
+  printf( WiFi.softAP( ssid ) ? "SoftAP START SUCCESS\n" : "SoftAP START FAILl\n" );
+  delay(100);
+
   ww_client::v_begin( );
   ww_page::v_begin( );
   ww_decode::v_begin( pau32_transition, pu16_transition_index_max, &seatalk_data );
   ww_storage::v_begin( p_correction_data );
   ww_vector::v_begin( p_var_display_data, p_seatalk_data, p_gnss_data, p_correction_data );
 
-  gnss.v_begin( &var_display_data, &gnss_data );
+  gnss.v_begin( p_gnss_data );
   hmi.v_begin();
   json.v_begin( p_var_display_data, p_correction_data );
   MDNS.begin( "winscreen" );
@@ -226,10 +231,10 @@ void loop() {
 
     filter.v_configure( correction_data.s16_fc, QQ );
 
-// Get unfiltered north and east components of boat speed from gnss data.
+// Get unfiltered speed, course and utc from gnss data.
 
-    gnss.v_x_gr_from_gnss( );
-    
+    gnss.v_sns_crn_utc_from_gnss( );
+   
 #ifndef SEATALK_DATA_AVAILABLE
 
 // Overwrite data with hard-coded demonstration values.
@@ -246,8 +251,8 @@ void loop() {
 
 // Overwrite data with hard-coded demonstration values.
 
-    gnss_data.x_gr.l = DEMO_SNS;
-    gnss_data.x_gr.a = DEMO_GRN;
+    gnss_data.d_sns = DEMO_SNS;
+    gnss_data.d_grn = DEMO_GRN;
 
 #endif
 
@@ -264,6 +269,10 @@ void loop() {
 
       if( ww_client::ap_client_list[ s8_client ]->s8_socket != DISCONNECTED ) {
 
+#ifdef DEBUG
+  printf( "CLIENT %d CONNECTED PAGE %d\n", s8_client, ww_client::ap_client_list[ s8_client ]->s8_this );
+#endif
+
 // Send json variables for the page corresponding to client s8_client
 // using the socket over which the client is connected.
 
@@ -273,6 +282,7 @@ void loop() {
         else if( ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->pac_html == ww_page::ac_html_01 ) {
           perspective_t e_perspective = ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->e_perspective;
           json.v_json_var_01( e_perspective, pac_json_var );
+
         }
         else if( ww_page::ap_page_list[ ww_client::ap_client_list[ s8_client ]->s8_this ]->pac_html == ww_page::ac_html_02 ) {
           json.v_json_var_02( pac_json_var );

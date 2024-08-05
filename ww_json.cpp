@@ -81,10 +81,9 @@ void ww_json::v_json_const_01( char* pac_json_const_01 ) {
 //
 // Load the JSON constants for page 01 into an array.
 //
+JsonDocument const_01;
 
-  JsonDocument const_01;
-
-  const_01["key"] = "constants";
+const_01["key"] = "constants";
 
   JsonObject display = const_01["display"].to<JsonObject>();
   display["bkgnd"] = BACKGROUND;
@@ -102,6 +101,10 @@ void ww_json::v_json_const_01( char* pac_json_const_01 ) {
   bt["s_clr"] = BOAT_SHADOW_COLOUR;
   bt["wt"] = BOAT_WEIGHT;
   bt["s_wt"] = BOAT_SHADOW_WEIGHT;
+
+  JsonObject st = const_01["st"].to<JsonObject>();
+  st["clr"] = SAT_COLOUR;
+  st["wt"] = SAT_WEIGHT;
 
   JsonObject tw = const_01["tw"].to<JsonObject>();
   tw["clr"] = TW_COLOUR;
@@ -129,7 +132,10 @@ void ww_json::v_json_const_01( char* pac_json_const_01 ) {
   hbt["y"] = HEART_BEAT_Y;
   hbt["s"] = HEART_BEAT_SIDE;
 
+  const_01.shrinkToFit();  // optional
+
   serializeJson(const_01, pac_json_const_01, 2048);
+
   delay(100);
 
 }
@@ -392,7 +398,7 @@ switch( e_perspective ){
 
   s8_heart_beat = p_var_display_data->s8_hb;
 
-  // s_crh = (String)p_var_display_data->d_ch;
+  s_crh = (String)p_var_display_data->d_ch;
 
   if( p_var_display_data->b_up ) {
     s_vmg_clr = VMG_UPWIND_COLOUR;
@@ -405,7 +411,7 @@ switch( e_perspective ){
     s_vmg_b_clr = VMG_BALL_DOWNWIND_COLOUR;
   }
 
-  strcpy( pac_utc, p_var_display_data->ac_utc ); // time display
+  strcpy( ac_utc, p_var_display_data->pac_utc ); // time display
 
   if( s8_heart_beat == 1 ) s_hbt_clr = HEART_BEAT_COLOUR_ON; else s_hbt_clr = HEART_BEAT_COLOUR_OFF;
 
@@ -555,7 +561,7 @@ void ww_json::v_json_var_02( char* pac_json_var_02 ) {
 // Load the variable display data for page 03 into a JSON array.
 //
 
-char ac_vmg[ 4 ];
+char ac_vmg[ 5 ];
 
   sprintf( ac_vmg, "%+4.1f", p_var_display_data->d_vt );
 
