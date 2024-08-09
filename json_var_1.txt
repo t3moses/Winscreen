@@ -19,6 +19,9 @@
   "bt" :
     { "x" : "_s_cr_x_", "y" : "_s_cr_y_"
     },
+  "st" :
+    { "x" : "_s_gr_x_", "y" : "_s_gr_y_"
+    },
   "rdr" :
     { "post" :
       { "x" : "_s_rp_x_", "y" : "_s_rp_y_"

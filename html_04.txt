@@ -126,7 +126,7 @@
      ctx_1.fillStyle=t_clr;
      ctx_1.fillText(dev,pw/2,y2);
 
-     ctx_1.font='50px Arial';
+     ctx_1.font='40px Arial';
      ctx_1.textAlign='center';
      ctx_1.fillStyle=t_clr;
      ctx_1.fillText(txt_02,pw/2,y3);

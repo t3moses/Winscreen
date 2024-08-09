@@ -6,7 +6,6 @@ namespace ww_vector {
         gnss_data_t* p_gnss_data,
         correction_data_t* p_correction_data );
       void v_display_from_instruments( );
-      void v_display_from_instruments( );
       radial_vector_t x_compress_angle( radial_vector_t x_radial_vector );
       component_vector_t x_component_from_l_a( double d_l, double d_a );
       component_vector_t x_component_from_x_y( double d_x, double d_y );

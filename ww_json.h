@@ -55,8 +55,10 @@ class ww_json {
     int16_t s16_ar_y; // apparent wind vector y coordinate relative to the panel centre (pixels).
     int16_t s16_tr_x; // true wind vector x coordinate relative to the panel centre (pixels).
     int16_t s16_tr_y; // true wind vector y coordinate relative to the panel centre (pixels).
-    int16_t s16_cr_x; // speed/course vector x coordinate relative to the panel centre (pixels).
-    int16_t s16_cr_y; // speed/course vector y coordinate relative to the panel centre (pixels).
+    int16_t s16_cr_x; // speed/course vector x coordinate relative to the panel centre according to Seatalk (pixels).
+    int16_t s16_cr_y; // speed/course vector y coordinate relative to the panel centre according to Seatalk (pixels).
+    int16_t s16_gr_x; // speed/course vector x coordinate relative to the panel centre according to GNSS (pixels).
+    int16_t s16_gr_y; // speed/course vector y coordinate relative to the panel centre according to GNSS (pixels).
     int16_t s16_vmg; // vmg ball x coordinate relative to the panel centre (pixels).
     int16_t s16_crh; // crh (leeway) x coordinate relative to the panel centre (pixels).
     int16_t s16_trn; // trn ball x coordinate relative to the panel centre (pixels).
@@ -124,8 +126,11 @@ class ww_json {
 
     radial_vector_t xd_cr; // Speed/course radial vector.
 
-    String s_cr_x; // x and y coordinates of the speed/course vector (pixels) relative to the centre of the panel.
+    String s_cr_x; // x and y coordinates of the speed/course vector according to Seatalk (pixels) relative to the centre of the panel.
     String s_cr_y;
+
+    String s_gr_x; // x and y coordinates of the speed/course vector according to GNSS (pixels) relative to the centre of the panel.
+    String s_gr_y;
 
     radial_vector_t xd_vr; // VMG radial vector.
 

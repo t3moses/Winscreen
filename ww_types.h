@@ -62,23 +62,22 @@ struct var_display_data_t {
 
   radial_vector_t xd_nh; // true north arrow point relative to heading in feet and degrees
   radial_vector_t xd_mh; // magnetic north arrow point relative to heading in feet and degrees
-  radial_vector_t xd_gh; // speed/course relative to heading according to GNSS
-  radial_vector_t xd_ch; // speed/course relative to heading according to selected source (SeaTalk or GNSS)
-  radial_vector_t xd_th; // true wind relative to heading
-  radial_vector_t xd_ah; // apparent wind relative to heading
-  radial_vector_t xd_vh; // vmg relative to heading
+  radial_vector_t xd_gh; // speed/course relative to heading according to GNSS in knots and degrees
+  radial_vector_t xd_sh; // speed/course relative to heading according to SeaTalk in knots and degrees
+  radial_vector_t xd_th; // true wind speed and angle relative to heading in knots and degrees
+  radial_vector_t xd_ah; // apparent wind speed and angle relative to heading in knots and degrees
+  radial_vector_t xd_vh; // vmg speed and angle relative to heading in knots and degrees
   radial_vector_t axd_hh[ HULL_POINTS_BOUND + 1 ]; // hull shape
-  radial_vector_t xd_rh; // compressed rudder vector relative to rudder post and heading
-  radial_vector_t xd_ph; // rudder post relative to boat centre and heading
-  double d_vt; // vmg
-  double d_ch; // coourse relative to heading according to selected source (SeaTalk or GNSS), degrees
-  double d_gh; // leeway according to GNSS
-  double d_tn; // true wind relative to true north, degrees
-  double d_cd; // compass deviation, degrees
-  double d_cn; // course relative to true north according to GNSS, degrees
-  bool b_up; // true value indicates upwind vmg
-  int8_t s8_hb; // Indicates whether heart beat is on or off
-  char* pac_utc; // Pointer to char array containing utc from satellite
+  radial_vector_t xd_rh; // compressed rudder tip position and angle relative to rudder post and heading in feet and degrees
+  radial_vector_t xd_ph; // rudder post position and angle relative to boat centre and heading in feet and degrees
+  double d_ah; // apparent wind angle relative to heading
+  double d_vt; // vmg in knots
+  double d_gh; // leeway according to GNSS in degrees
+  double d_tn; // true wind relative to true north in degrees
+  double d_hm; // heading relative to magnetic north according to Seatalk in degrees
+  bool b_up; // true value indicates upwind vmg, false indicates downwind
+  int8_t s8_hb; // indicates whether heart beat is on or off
+  char* pac_utc; // pointer to char array containing utc from gnss
 
 };
 

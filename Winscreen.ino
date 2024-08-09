@@ -35,8 +35,8 @@ THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define DEMO_HRM -30.0
 #define DEMO_AWS 8.0
 #define DEMO_ARO -30.0
-#define DEMO_SNS 4.0
-#define DEMO_GRN -43.0
+#define DEMO_SNS 3.5
+#define DEMO_GRN -37.0
 #define DEMO_RDR 10.0
 
 #include "ww_constants.h"

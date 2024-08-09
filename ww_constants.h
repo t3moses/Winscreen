@@ -89,8 +89,8 @@
 #define BOAT_SHADOW_COLOUR "rgba(255,255,210,1.0)"
 #define BOAT_WEIGHT 8
 #define BOAT_SHADOW_WEIGHT 2
-#define SAT_COLOUR "rgb(255,192,203,1.0)" // Colour of the GNSS vector.
-#define SAT_WEIGHT 2
+#define SAT_COLOUR "rgba(0,255,255,1.0)" // Colour of the GNSS vector.
+#define SAT_WEIGHT 4
 #define TW_COLOUR "rgba(255,210,255,1.0)" // Pale magenta.  Colour of the true wind vector (TWS and TRH).
 #define TW_SHADOW_COLOUR "rgba(255,210,255,1.0)"
 #define TW_WEIGHT 8
@@ -109,7 +109,7 @@
 #define BALL_PANEL_HEIGHT 35
 #define FSD 20 // Knots.
 #define DISPLAY_AREA_RATIO 0.9 // Portion of display used by vectors.
-#define CRH_BALL_COLOUR BOAT_COLOUR
+#define CRH_BALL_COLOUR SAT_COLOUR
 #define VMG_BALL_UPWIND_COLOUR VMG_DOWNWIND_COLOUR
 #define VMG_BALL_DOWNWIND_COLOUR VMG_DOWNWIND_COLOUR
 #define TRN_BALL_COLOUR TW_COLOUR
@@ -123,10 +123,10 @@
 #define MAGNETIC_NORTH_WEIGHT 2
 #define NORTH_POINT_ANGLE 15 // Half the angle at point of north arrow (degrees)
 #define NORTH_SIDE 20.0 // Length of the side of the north triangle (pixels).
-#define AH_BAND 180.0 // ARH change represented by the ARH ribbon, degrees.
-#define CH_BAND 40.0 // CRH change represented by the CRH ribbon, degrees.
-#define VT_BAND 10.0 // VMG change represented by the VMG ribbon, knots.
-#define TN_BAND 360.0 // TRN change represented by the TRN ribbon, degrees.
+#define AH_BAND 180.0 // ARH change represented by the ARH ribbon on page 3, degrees.
+#define GH_BAND 40.0 // GRH (AKA leeway) change represented by the GRH ribbon on pages 1 and 3, degrees.
+#define VT_BAND 10.0 // VMG change represented by the VMG ribbon on page 1, knots.
+#define TN_BAND 360.0 // TRN change represented by the TRN ribbon on page 1, degrees.
 
 // Heartbeat constants
 
@@ -157,6 +157,8 @@ const int8_t as8_hull[ 30 ] = {
 #define ARROWHEAD_LENGTH 0.15 // Relative length of an arrowhead.
 #define ARROWHEAD_WIDTH 0.1 // Relative width of an arrowhead.
 
+#define VMG_FROM_HDG true // VMG is calculated from heading, as opposed to course.
+
 // Page 2 constants.  VMG display.
 
 #define P2_BACKGROUND "rgba(0,0,0,1.0)" // Black.
@@ -178,7 +180,7 @@ const int8_t as8_hull[ 30 ] = {
 #define P3_BACKGROUND "rgba(0,0,0,1.0)" // Black.
 #define P3_TEXT_COLOUR "rgba(255,255,255,1.0)"
 #define P3_OFFSET_COLOUR AW_COLOUR
-#define P3_VARIATION_COLOUR BOAT_COLOUR
+#define P3_VARIATION_COLOUR SAT_COLOUR
 #define P3_ROW_WIDTH_1 75
 #define P3_ROW_WIDTH_2 150
 #define P3_ROW_WIDTH_3 300
@@ -211,11 +213,11 @@ const int8_t as8_hull[ 30 ] = {
 #define DEGREES_FROM_RADIANS 57.2958
 #define MIN_NORTH 0.001 // Avoid divide by zero.
 
-// Variation constants.
+// Compass variation constants.
 
 #define INITIAL_MRN -13.0 // Initial compass variation.
 
-// non-volatile storage constants.
+// Non-volatile storage constants.
 
 #define ERASE_TIMEOUT 3000 // User prompt timeout for NVS erasure (milliseconds).
 

@@ -14,7 +14,7 @@
   },
   "txt" : 
   { "t01" : "DEVIATION",
-    "t02" : "COURSE",
+    "t02" : "HEADING (M)",
     "t03" : "DEGREES",
     "t04" : "ONLY VALID WHEN MOTORING"
   } 

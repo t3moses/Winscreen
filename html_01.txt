@@ -56,6 +56,9 @@
    var b_wt;
    var b_s_wt;
 
+   var g_clr;
+   var g_wt;
+
    var tw_clr;
    var tw_s_clr;
    var tw_wt;
@@ -129,6 +132,9 @@
      b_s_clr=rx.bt.s_clr;
      b_wt=parseInt(rx.bt.wt);
      b_s_wt=parseInt(rx.bt.s_wt);
+
+     g_clr=rx.st.clr;
+     g_wt=parseInt(rx.st.wt);
 
      tw_clr=rx.tw.clr;
      tw_s_clr=rx.tw.s_clr;
@@ -248,6 +254,13 @@
      ctx_1.strokeStyle=b_clr;
      ctx_1.moveTo(c_x,c_y);
      ctx_1.lineTo(c_x+parseInt(rx.bt.x),c_y+parseInt(rx.bt.y));
+     ctx_1.stroke();
+
+     ctx_1.beginPath();
+     ctx_1.lineWidth=g_wt;
+     ctx_1.strokeStyle=g_clr;
+     ctx_1.moveTo(c_x,c_y);
+     ctx_1.lineTo(c_x+parseInt(rx.st.x),c_y+parseInt(rx.st.y));
      ctx_1.stroke();
 
      ctx_1.beginPath();
