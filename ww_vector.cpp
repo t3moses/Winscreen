@@ -33,8 +33,9 @@ radial_vector_t xd_aro; // Apparent wind radial vector relative to wind-vane off
 radial_vector_t xd_hrm; // Radial heading relative to magnetic north.
 radial_vector_t xd_hrn; // Radial heading relative to true north.
 radial_vector_t xd_grh; // Radial GNSS speed/course relative to heading.
+radial_vector_t xd_crh; // Radial speed/course relative to heading according to either Seatalk or GNSS.
 
-course_t e_course; // Source for course calculation.
+// course_t e_course; // Source for course calculation.
 
 void ww_vector::v_begin( var_display_data_t* p_var_display_data, seatalk_data_t* p_seatalk_data, gnss_data_t* p_gnss_data,
   correction_data_t* p_correction_data ) {
@@ -77,20 +78,20 @@ void ww_vector::v_display_from_instruments( ) {
   ww_vector::p_var_display_data->xd_gh = ww_vector::x_radial_from_component( gc_filter.x_step( ww_vector::x_component_from_l_a( ww_vector::p_gnss_data->d_sns, ww_vector::d_add_angle( ww_vector::p_gnss_data->d_grn, -d_hrn ))));
   ww_vector::p_var_display_data->d_hm = ww_vector::d_angle_from_radial( xd_hrm );
   ww_vector::p_var_display_data->xd_ah = ww_vector::x_rotate ( xd_aro, (double)ww_vector::p_correction_data->s16_orh );
-  ww_vector::p_var_display_data->xd_th = ww_vector::x_subtract_radial( ww_vector::p_var_display_data->xd_ah, ww_vector::p_var_display_data->xd_sh );
   for( int8_t s8_index = 0; s8_index <= HULL_POINTS_BOUND; s8_index++ ) {
 	  ww_vector::p_var_display_data->axd_hh[ s8_index ] = ww_vector::x_radial_from_component( ww_vector::x_component_from_x_y( (double)as8_hull[ 2 * s8_index ], (double)as8_hull[ 2 * s8_index + 1 ]));
   };
-  d_trh = ww_vector::d_angle_from_radial( ww_vector::p_var_display_data->xd_th );
-  d_hrt = -d_trh;
   ww_vector::p_var_display_data->d_gh = ww_vector::d_angle_from_radial( ww_vector::p_var_display_data->xd_gh );
   #if VMG_FROM_HDG
-    d_crh = ww_vector::d_angle_from_radial( ww_vector::p_var_display_data->xd_sh );
-    d_spd = ww_vector::d_length_from_radial( ww_vector::p_var_display_data->xd_sh );
+    xd_crh = ww_vector::p_var_display_data->xd_sh;
   #else // VMG from course
-    d_crh = ww_vector::d_angle_from_radial( ww_vector::p_var_display_data->xd_gh );
-    d_spd = ww_vector::d_length_from_radial( ww_vector::p_var_display_data->xd_gh );
+    xd_crh = ww_vector::p_var_display_data->xd_gh;
   #endif
+  ww_vector::p_var_display_data->xd_th = ww_vector::x_subtract_radial( ww_vector::p_var_display_data->xd_ah, xd_crh );
+  d_trh = ww_vector::d_angle_from_radial( ww_vector::p_var_display_data->xd_th );
+  d_hrt = -d_trh;
+  d_crh = ww_vector::d_angle_from_radial( xd_crh );
+  d_spd = ww_vector::d_length_from_radial( xd_crh );
   d_crt = ww_vector::d_add_angle( d_crh, d_hrt );
   ww_vector::p_var_display_data->d_vt = ww_vector::d_projection( d_spd, d_crt );
   ww_vector::p_var_display_data->d_tn = ww_vector::d_add_angle( d_trh, d_hrn );
@@ -348,7 +349,7 @@ double ww_vector::d_projection( double d_length, double d_angle ) {
 }
 
 
-
+/*
 bool ww_vector::b_upwind_from_instruments( ) {
 
   double d_crt = d_add_angle( ww_vector::p_var_display_data->d_gh, -d_trh );
@@ -356,7 +357,7 @@ bool ww_vector::b_upwind_from_instruments( ) {
   if( d_crt > -90.0 && d_crt < 90.0 ) return true; else return false;
 
 }
-
+*/
 
 
 double ww_vector::d_normalize_angle( double d_a ) {

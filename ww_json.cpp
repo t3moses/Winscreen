@@ -81,6 +81,7 @@ void ww_json::v_json_const_01( char* pac_json_const_01 ) {
 //
 // Load the JSON constants for page 01 into an array.
 //
+
 JsonDocument const_01;
 
 const_01["key"] = "constants";
@@ -338,12 +339,19 @@ switch( e_perspective ){
   s_cr_shadow_begin_y = s_tr_y;
   s_cr_shadow_end_x = s_ar_x;
   s_cr_shadow_end_y = s_ar_y;
-  s_tr_shadow_begin_x = s_cr_x;
-  s_tr_shadow_begin_y = s_cr_y;
+  #if VMG_FROM_HDG
+    s_vr_shadow_begin_x = s_cr_x;
+    s_vr_shadow_begin_y = s_cr_y;
+    s_tr_shadow_begin_x = s_cr_x;
+    s_tr_shadow_begin_y = s_cr_y;
+  #else // VMG from course
+    s_vr_shadow_begin_x = s_gr_x;
+    s_vr_shadow_begin_y = s_gr_y;
+    s_tr_shadow_begin_x = s_gr_x;
+    s_tr_shadow_begin_y = s_gr_y;
+  #endif
   s_tr_shadow_end_x = s_ar_x;
   s_tr_shadow_end_y = s_ar_y;
-  s_vr_shadow_begin_x = s_cr_x;
-  s_vr_shadow_begin_y = s_cr_y;
   s_vr_shadow_end_x = s_vr_x;
   s_vr_shadow_end_y = s_vr_y;
 

@@ -10,7 +10,7 @@
 
 #include "ww_constants.h"
 
-typedef enum { HDG, FIX, CRS } course_t;
+// typedef enum { HDG, FIX, CRS } course_t;
 typedef enum { PWS, HRM, AWS, ARO, NOTA } datagram_type_t;
 typedef enum { ADMIN, USER } client_role_t;
 typedef enum { WAITING_FOR_CONNECTION, WAITING_FOR_VARIABLES } client_state_t;

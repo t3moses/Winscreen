@@ -157,7 +157,7 @@ const int8_t as8_hull[ 30 ] = {
 #define ARROWHEAD_LENGTH 0.15 // Relative length of an arrowhead.
 #define ARROWHEAD_WIDTH 0.1 // Relative width of an arrowhead.
 
-#define VMG_FROM_HDG true // VMG is calculated from heading, as opposed to course.
+#define VMG_FROM_HDG false // VMG is calculated from heading, as opposed to course.
 
 // Page 2 constants.  VMG display.
 

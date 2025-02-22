@@ -1,0 +1,108 @@
+
+In ww_constants.h // HMI constants
+
+Add:
+
+#define SPEED_CIRCLE_COLOUR "rgba(0,0,0,1.0)" // White
+#define SPEED_CIRCLE_WEIGHT 1
+
+Add:
+
+const int8_t as8_spr[ 6 ] = { 5, 10, 15, 20 } // Speed ring radii in knots
+
+
+
+In json.h
+
+Add:
+
+    String s_spr_0; // speed ring radii in pixels
+    String s_spr_1;
+    String s_spr_2;
+    String s_spr_3;
+
+
+
+In json.cpp function: void ww_json::v_json_var_01( perspective_t e_perspective, char* pac_json_var_01 ) {
+
+Insert:
+
+s_spr_0 = (String)(int16_t)( PIXELS_PER_KNOT * (double)as8_spr[ 0 ]);
+s_spr_1 = (String)(int16_t)( PIXELS_PER_KNOT * (double)as8_spr[ 1 ]);
+s_spr_2 = (String)(int16_t)( PIXELS_PER_KNOT * (double)as8_spr[ 2 ]);
+s_spr_3 = (String)(int16_t)( PIXELS_PER_KNOT * (double)as8_spr[ 3 ]);
+
+
+
+In json_const_1.txt
+
+Before:
+
+  "rdr" : 
+  { "clr" : "_RUDDER_COLOUR_" ,
+    "wt" : "_RUDDER_WEIGHT_"
+  },
+
+Insert:
+
+  "spr" : 
+  { "clr" : "_SPEED_RING_COLOUR_" ,
+    "wt" : "_SPEED_RING_WEIGHT_"
+  },
+
+Insert:
+
+  "spr" : [ "r0" : s_spr_0,
+            "r1" : s_spr_1,
+            "r2" : s_spr_2,
+            "r3" : s_spr_3 ],
+
+Note: these are the radii in pixels of the speed rings.
+
+
+
+In html_01.txt <script>
+
+Insert:
+
+var spr_clr
+var spr_wt
+spr_r0
+spr_r1
+spr_r2
+spr_r3
+
+After: if (rx.key==='constants'){
+
+Insert:
+
+spr_clr=rx.spr.clr
+spr_wt=rx.spr.wt
+spr_r0=rx.spr.r0
+spr_r1=rx.spr.r1
+spr_r2=rx.spr.r2
+spr_r3=rx.spr.r3
+
+After: if (rx.key==='variables'){
+
+Insert:
+
+ctx_1.strokeStyle=spr_clr;
+ctx_1.lineWidth=spr_wt;
+ctx.beginPath();
+ctx.arc(c_x, c_y, spr_r0, 0, 2 * Math.PI);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(c_x, c_y, spr_r1, 0, 2 * Math.PI);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(c_x, c_y, spr_r2, 0, 2 * Math.PI);
+ctx.stroke();
+
+ctx.beginPath();
+ctx.arc(c_x, c_y, spr_r3, 0, 2 * Math.PI);
+ctx.stroke();
+
+
